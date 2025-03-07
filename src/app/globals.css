@@ -173,6 +173,10 @@ body {
   .medium__text {
     @apply text-base leading-[150%] font-normal;
   }
+
+  .small__text {
+    @apply text-sm leading-[150%] font-normal;
+  }
 }
 
 .preview__component {

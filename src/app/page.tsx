@@ -1,10 +1,12 @@
-import HomePage from "./home/home-page";
+import HomeMain from "@/components/home/home-main";
 
-export default function page() {
+export default function HomePage() {
   return (
     <div>
       <h2 className=" font-sans">
-        <HomePage />
+        <div className="bg-gray-background h-[100dvh] flex flex-col gap-4">
+          <HomeMain />
+        </div>
       </h2>
     </div>
   );

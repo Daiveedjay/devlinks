@@ -11,7 +11,7 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-purple-primary text-primary-foreground shadow-xs hover:bg-purple-secondary",
-        active: "bg-purple-light",
+        active: "bg-purple-light text-purple-primary",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:

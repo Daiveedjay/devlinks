@@ -1,15 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Link as LinkType, useLinkStore } from "@/store/useLinkStore";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-
-interface Link {
-  id: string;
-  title: string;
-  url: string;
-  platform: string;
-}
 
 interface PhonePreviewProps {
   profile?: {
@@ -18,14 +13,12 @@ interface PhonePreviewProps {
     lastName?: string;
     email?: string;
   };
-  links?: Link[];
+  links?: LinkType[];
 }
 
-export default function PhonePreview({
-  profile,
-  links = [],
-}: PhonePreviewProps) {
+export default function PhonePreview({ profile }: PhonePreviewProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const links = useLinkStore((store) => store.links);
 
   return (
     <div className="relative w-[280px]  h-[575px]">
@@ -88,14 +81,14 @@ export default function PhonePreview({
           </div>
 
           {/* Profile Name */}
-          <h1 className="text-base font-bold text-[#333333] mb-[4px]">
+          <h1 className="text-base font-bold text-gray-dark mb-[4px]">
             {profile?.firstName && profile?.lastName
               ? `${profile.firstName} ${profile.lastName}`
               : profile?.email?.split("@")[0] || "Your Name"}
           </h1>
 
           {/* Profile Email */}
-          <p className="text-[14px] text-[#737373] mb-[24px]">
+          <p className="text-[14px] text-gray-medium mb-[24px]">
             {profile?.email || "email@example.com"}
           </p>
 
@@ -103,14 +96,14 @@ export default function PhonePreview({
           <div className="w-full space-y-4">
             {links.length > 0
               ? links.map((link) => (
-                  <a
+                  <Link
                     key={link.id}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full p-4 bg-[#efebff] hover:bg-[#efebff]/80 text-[#633cff] rounded-lg font-medium text-center transition-colors text-[14px]">
-                    {link.title || link.platform}
-                  </a>
+                    className="block w-full p-4 bg-purple-light hover:bg-purple-light/80 text-purple-primary rounded-lg font-medium text-center transition-colors text-[14px]">
+                    {link.platform}
+                  </Link>
                 ))
               : Array.from({ length: 3 }).map((_, i) => (
                   <div
