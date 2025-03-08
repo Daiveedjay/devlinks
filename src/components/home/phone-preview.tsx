@@ -2,23 +2,21 @@
 
 import { cn } from "@/lib/utils";
 import { Link as LinkType, useLinkStore } from "@/store/useLinkStore";
+import { User, useUserStore } from "@/store/useUserStore";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 interface PhonePreviewProps {
-  profile?: {
-    image?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-  };
+  profile: User;
   links?: LinkType[];
 }
 
 export default function PhonePreview({ profile }: PhonePreviewProps) {
   const [isLoading, setIsLoading] = useState(true);
   const links = useLinkStore((store) => store.links);
+
+  const { username, bio, user_image } = useUserStore((store) => store.user);
 
   return (
     <div className="relative w-[280px]  h-[575px]">
@@ -49,9 +47,9 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
         <div className="flex flex-col items-center pt-[16px] px-6">
           {/* Profile Image */}
           <div className="w-[88px] h-[88px] rounded-full overflow-hidden bg-[#EEEEEE] mb-[24px]">
-            {profile?.image ? (
+            {profile?.user_image ? (
               <Image
-                src={profile.image || "/placeholder.jpg"}
+                src={profile.user_image || "/placeholder.jpg"}
                 alt="Profile"
                 width={88}
                 height={88}
@@ -61,7 +59,7 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
                     ? "scale-110 blur-2xl grayscale"
                     : "scale-100 blur-0 grayscale-0"
                 )}
-                onLoadingComplete={() => setIsLoading(false)}
+                onLoad={() => setIsLoading(false)}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -82,29 +80,36 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
 
           {/* Profile Name */}
           <h1 className="text-base font-bold text-gray-dark mb-[4px]">
-            {profile?.firstName && profile?.lastName
-              ? `${profile.firstName} ${profile.lastName}`
-              : profile?.email?.split("@")[0] || "Your Name"}
+            @{username || "John Doe"}
           </h1>
 
           {/* Profile Email */}
-          <p className="text-[14px] text-gray-medium mb-[24px]">
+          <p className="text-[14px] text-gray-medium mb-[8px]">
             {profile?.email || "email@example.com"}
+          </p>
+          <p className="text-[14px] text-gray-medium mb-[24px]">
+            {bio || "email@example.com"}
           </p>
 
           {/* Links */}
           <div className="w-full space-y-4">
             {links.length > 0
-              ? links.map((link) => (
-                  <Link
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full p-4 bg-purple-light hover:bg-purple-light/80 text-purple-primary rounded-lg font-medium text-center transition-colors text-[14px]">
-                    {link.platform}
-                  </Link>
-                ))
+              ? links.map((link) => {
+                  const brand = link.platform?.toLowerCase() || "default";
+                  return (
+                    <Link
+                      key={link.id}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
+                      }}
+                      className="block text-white w-full p-4  rounded-lg font-medium text-center transition-colors capitalize text-[14px]">
+                      {link.platform}
+                    </Link>
+                  );
+                })
               : Array.from({ length: 3 }).map((_, i) => (
                   <div
                     key={i}

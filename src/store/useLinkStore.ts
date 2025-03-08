@@ -9,6 +9,7 @@ export interface Link {
 interface LinkStore {
   links: Link[];
   addLink: () => void;
+  // Partial<Link> allows us to update only the fields we want
   updateLink: (id: string, updatedData: Partial<Link>) => void;
   removeLink: (id: string) => void;
 }

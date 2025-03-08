@@ -4,7 +4,9 @@ import ErrorText from "@/components/error-text";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { profileSchema } from "@/lib/validation";
+import { User, useUserStore } from "@/store/useUserStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,8 +23,11 @@ export default function ProfileForm() {
     resolver: zodResolver(profileSchema),
   });
 
-  const onSubmit = (data: unknown) => {
+  const updateUser = useUserStore((store) => store.updateUser);
+
+  const onSubmit = (data: Partial<User>) => {
     console.log(data);
+    updateUser({ username: data.username, bio: data.bio });
   };
   return (
     <form
@@ -30,51 +35,57 @@ export default function ProfileForm() {
       onSubmit={handleSubmit(onSubmit)}>
       <div className="space-y-1 flex">
         <Label
-          htmlFor="firstName"
+          htmlFor="username"
           className=" text-gray-medium font-normal flex-1/3">
-          First name *
+          Username *
         </Label>
-        <div className="w-full space-y-1">
+        <div className="w-full space-y-1 relative">
           {" "}
           <Input
-            {...register("firstName")}
-            id="firstName"
-            defaultValue="Ben"
+            {...register("username")}
+            id="username"
+            placeholder="Ben"
             className={`border flex-2/3 ${
-              focusedField === "firstName"
+              focusedField === "username"
                 ? "focus:border-purple-primary focus:ring-purple-primary ring-1"
                 : "border-gray-light"
             } rounded-md px-3 py-2 focus:outline-none`}
-            onFocus={() => setFocusedField("firstName")}
+            onFocus={() => setFocusedField("username")}
             onBlur={() => setFocusedField(null)}
             autoFocus
           />
-          {errors.firstName && (
-            <ErrorText>{errors.firstName.message}</ErrorText>
+          {errors.username && (
+            <div className=" absolute top-1/2 -translate-y-2/3 right-2">
+              {" "}
+              <ErrorText>{errors.username.message}</ErrorText>
+            </div>
           )}
         </div>
       </div>
 
       <div className="space-y-2 flex">
-        <Label
-          htmlFor="lastName"
-          className=" text-gray-medium font-normal flex-1/3">
-          Last name *
+        <Label htmlFor="bio" className=" text-gray-medium font-normal flex-1/3">
+          Bio
         </Label>
-        <div className="w-full space-y-1">
-          <Input
-            {...register("lastName")}
-            id="lastName"
-            defaultValue="Wright"
-            className={`border flex-2/3 ${
-              focusedField === "lastName"
+        <div className="w-full space-y-1 relative">
+          <Textarea
+            {...register("bio")}
+            id="bio"
+            defaultValue="An adventurer who loves to explore new places."
+            className={`border resize-none flex-2/3 ${
+              focusedField === "bio"
                 ? "focus:border-purple-primary focus:ring-purple-primary ring-1"
                 : "border-gray-light"
             } rounded-md px-3 py-2 focus:outline-none`}
-            onFocus={() => setFocusedField("lastName")}
+            onFocus={() => setFocusedField("bio")}
             onBlur={() => setFocusedField(null)}
           />{" "}
-          {errors.lastName && <ErrorText>{errors.lastName.message}</ErrorText>}
+          {errors.bio && (
+            <div className=" absolute top-1/2 -translate-y-2/3 right-2">
+              {" "}
+              <ErrorText>{errors.bio.message}</ErrorText>
+            </div>
+          )}
         </div>
       </div>
 
@@ -100,8 +111,10 @@ export default function ProfileForm() {
         </div>
       </div>
 
-      <div>
-        <Button>Save</Button>
+      <div className=" border-t-2 p-6 flex mt-10 justify-end">
+        <Button className="px-8 py-6" variant="default">
+          Save
+        </Button>
       </div>
     </form>
   );

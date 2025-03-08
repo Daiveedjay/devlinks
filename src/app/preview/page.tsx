@@ -1,9 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useLinkStore } from "@/store/useLinkStore";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Page() {
+  const links = useLinkStore((store) => store.links);
   return (
     <div className=" bg-gray-background">
       <div className=" p-8 rounded-b-3xl bg-purple-primary h-[50dvh]">
@@ -34,13 +36,21 @@ export default function Page() {
             <p className="small__text mt-4 text-center">ben@example.com</p>
           </div>
           <ul className=" mt-14 w-full text-white flex flex-col gap-4">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <li
-                className="p-4 rounded-[6px] bg-purple-primary w-full"
-                key={index}>
-                Instagram
-              </li>
-            ))}
+            {links.map((link) => {
+              const brand = link.platform?.toLowerCase() || "default";
+              return (
+                <Link
+                  href={link.url}
+                  target="_blank"
+                  className="p-4 rounded-[6px] bg-purple-primary w-full capitalize"
+                  style={{
+                    backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
+                  }}
+                  key={link.id}>
+                  {link.platform}
+                </Link>
+              );
+            })}
           </ul>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import Navbar from "@/components/nav-bar";
 import PhonePreview from "./phone-preview";
 import React from "react";
+import { User } from "@/store/useUserStore";
 
 export default function HomeLayout({
   children,
@@ -8,10 +9,11 @@ export default function HomeLayout({
   children: React.ReactNode;
 }) {
   // Mock data (replace with actual data fetching)
-  const mockProfile = {
-    image: "/placeholder.jpg",
-    firstName: "John",
-    lastName: "Doe",
+  const mockProfile: User = {
+    id: "1",
+    bio: "I'm a software engineer who loves building web applications.",
+    user_image: "/placeholder.jpg",
+    username: "John",
     email: "john@example.com",
   };
 

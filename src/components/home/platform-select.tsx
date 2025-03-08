@@ -1,22 +1,6 @@
 "use client";
 
-import {
-  Check,
-  ChevronDown,
-  Github,
-  Twitter,
-  Linkedin,
-  Facebook,
-  Youtube,
-  Twitch,
-  Code2,
-  Globe,
-  Dribbble,
-  Framer,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Command,
   CommandEmpty,
@@ -25,77 +9,18 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Label } from "../ui/label";
+import { platforms } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
-
-const platforms = [
-  {
-    value: "github",
-    label: "GitHub",
-    icon: Github,
-    placeholder: "https://github.com/username",
-  },
-  {
-    value: "twitter",
-    label: "Twitter",
-    icon: Twitter,
-    placeholder: "https://twitter.com/username",
-  },
-  {
-    value: "linkedin",
-    label: "LinkedIn",
-    icon: Linkedin,
-    placeholder: "https://linkedin.com/in/username",
-  },
-  {
-    value: "facebook",
-    label: "Facebook",
-    icon: Facebook,
-    placeholder: "https://facebook.com/username",
-  },
-  {
-    value: "youtube",
-    label: "YouTube",
-    icon: Youtube,
-    placeholder: "https://youtube.com/c/channelname",
-  },
-  {
-    value: "dribbble",
-    label: "Dribbble Portfolio",
-    icon: Dribbble,
-    placeholder: "https://dribbble.com/username",
-  },
-  {
-    value: "twitch",
-    label: "Twitch",
-    icon: Twitch,
-    placeholder: "https://twitch.tv/username",
-  },
-  {
-    value: "devto",
-    label: "Dev.to",
-    icon: Code2,
-    placeholder: "https://dev.to/username",
-  },
-  {
-    value: "website",
-    label: "Personal Website",
-    icon: Globe,
-    placeholder: "https://yoursite.com",
-  },
-
-  {
-    value: "framer",
-    label: "Design Portfolio",
-    icon: Framer,
-    placeholder: "https://framer.com/username",
-  },
-];
+import { Label } from "../ui/label";
+import { socialMediaSchema } from "@/lib/validation";
 
 interface PlatformSelectProps {
   value?: string;
@@ -123,6 +48,15 @@ export function PlatformSelect({
     setSelectedValue(currentValue);
     onValueChange?.(currentValue);
     setOpen(false);
+  };
+
+  const [linkError, setLinkError] = useState<string | null>(null);
+
+  const validateLink = (url: string) => {
+    const result = socialMediaSchema.safeParse({ platform: value, url });
+    setLinkError(
+      result.success ? null : result.error.format().url?._errors[0] ?? null
+    );
   };
 
   return (
@@ -186,6 +120,8 @@ export function PlatformSelect({
           value={linkValue}
           onChange={(e) => onLinkChange?.(e.target.value)}
           placeholder={selectedPlatform?.placeholder || "Enter your link"}
+          onBlur={() => validateLink(linkValue)}
+          disabled={!selectedPlatform}
           className={cn(
             "h-12 border-gray-light focus:border-purple-primary focus:ring-2 focus:ring-purple-light",
             error &&
@@ -193,7 +129,7 @@ export function PlatformSelect({
           )}
         />
       </div>
-      {error && <p className="text-sm text-red-error mt-1">{error}</p>}
+      {linkError && <p className="text-sm text-red-error mt-1">{linkError}</p>}
     </div>
   );
 }

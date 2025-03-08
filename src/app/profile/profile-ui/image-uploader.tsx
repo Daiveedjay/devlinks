@@ -5,6 +5,7 @@ import type React from "react";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ImageIcon } from "lucide-react";
+import Image, { StaticImageData } from "next/image";
 
 interface ProgressBarProps {
   progress: number;
@@ -24,7 +25,9 @@ export function ProgressBar({ progress }: ProgressBarProps) {
 }
 
 export function ImageUploader() {
-  const [image, setImage] = useState<string | null>("/placeholder.jpg");
+  const [image, setImage] = useState<string | StaticImageData>(
+    "/placeholder.jpg"
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,7 +86,7 @@ export function ImageUploader() {
   return (
     <div className="relative w-full aspect-square max-w-[240px]  rounded-md overflow-hidden">
       {/* Background Image */}
-      <div
+      {/* <div
         className="w-full h-full bg-gray-200"
         style={
           image
@@ -94,7 +97,9 @@ export function ImageUploader() {
               }
             : {}
         }
-      />
+      
+      /> */}
+      <Image src={image} sizes="100%" fill className=" object-cover" alt="" />
 
       {/* Overlay */}
       <motion.div
