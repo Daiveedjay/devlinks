@@ -15,7 +15,7 @@ export default function ProfilePage() {
           <div className=" flex-2/3 flex items-center  ">
             <ImageUploader />
             <p className="p-8 small__text">
-              Image must be below 1024x1024px. Use PNG or JPG format.
+              Image must be below 5mb. Preferably use PNG or JPG format.
             </p>
           </div>
         </div>

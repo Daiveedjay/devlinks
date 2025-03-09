@@ -118,7 +118,10 @@ export function PlatformSelect({
         <Input
           type="url"
           value={linkValue}
-          onChange={(e) => onLinkChange?.(e.target.value)}
+          onChange={(e) => {
+            onLinkChange?.(e.target.value);
+            validateLink(e.target.value); // Run validation as user types
+          }}
           placeholder={selectedPlatform?.placeholder || "Enter your link"}
           onBlur={() => validateLink(linkValue)}
           disabled={!selectedPlatform}

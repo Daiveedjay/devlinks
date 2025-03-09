@@ -1,7 +1,8 @@
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Instrument_Sans } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
+import QueryProvider from "./query-provider";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
@@ -24,8 +25,10 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${instrumentSans.variable} font-sans text-gray-medium antialiased`}>
-        {children}
-        <Toaster />
+        <QueryProvider>
+          {children}
+          <Toaster position="top-right" />
+        </QueryProvider>
       </body>
     </html>
   );

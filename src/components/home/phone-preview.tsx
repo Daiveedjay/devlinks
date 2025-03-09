@@ -6,6 +6,12 @@ import { User, useUserStore } from "@/store/useUserStore";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
+import LinkPreview from "./link-preview";
 
 interface PhonePreviewProps {
   profile: User;
@@ -47,35 +53,19 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
         <div className="flex flex-col items-center pt-[16px] px-6">
           {/* Profile Image */}
           <div className="w-[88px] h-[88px] rounded-full overflow-hidden bg-[#EEEEEE] mb-[24px]">
-            {profile?.user_image ? (
-              <Image
-                src={profile.user_image || "/placeholder.jpg"}
-                alt="Profile"
-                width={88}
-                height={88}
-                className={cn(
-                  "w-full h-full object-cover duration-700 ease-in-out",
-                  isLoading
-                    ? "scale-110 blur-2xl grayscale"
-                    : "scale-100 blur-0 grayscale-0"
-                )}
-                onLoad={() => setIsLoading(false)}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <svg
-                  width="36"
-                  height="36"
-                  viewBox="0 0 40 40"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M20 0C8.95427 0 0 8.95427 0 20C0 31.0457 8.95427 40 20 40C31.0457 40 40 31.0457 40 20C40 8.95427 31.0457 0 20 0ZM20 8.5C24.1421 8.5 27.5 11.8579 27.5 16C27.5 20.1421 24.1421 23.5 20 23.5C15.8579 23.5 12.5 20.1421 12.5 16C12.5 11.8579 15.8579 8.5 20 8.5ZM20 35C15.2667 35 11.0765 32.7639 8.39969 29.2429C9.95969 26.5307 12.8719 24.75 16.25 24.75C16.4199 24.75 16.5899 24.7779 16.7539 24.8279C17.7959 25.1639 18.8759 25.35 20 25.35C21.1241 25.35 22.2041 25.1639 23.2461 24.8279C23.4101 24.7779 23.5801 24.75 23.75 24.75C27.1281 24.75 30.0403 26.5307 31.6003 29.2429C28.9235 32.7639 24.7333 35 20 35Z"
-                    fill="#737373"
-                  />
-                </svg>
-              </div>
-            )}
+            <Image
+              src={user_image === "" ? "/placeholder.jpg" : user_image}
+              alt="Profile"
+              width={88}
+              height={88}
+              className={cn(
+                "w-full h-full object-cover duration-700 ease-in-out",
+                isLoading
+                  ? "scale-110 blur-2xl grayscale"
+                  : "scale-100 blur-0 grayscale-0"
+              )}
+              onLoad={() => setIsLoading(false)}
+            />
           </div>
 
           {/* Profile Name */}
@@ -88,7 +78,7 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
             {profile?.email || "email@example.com"}
           </p>
           <p className="text-[14px] text-gray-medium mb-[24px]">
-            {bio || "email@example.com"}
+            {bio || " An amazing bio goes here"}
           </p>
 
           {/* Links */}
@@ -97,17 +87,24 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
               ? links.map((link) => {
                   const brand = link.platform?.toLowerCase() || "default";
                   return (
-                    <Link
-                      key={link.id}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
-                      }}
-                      className="block text-white w-full p-4  rounded-lg font-medium text-center transition-colors capitalize text-[14px]">
-                      {link.platform}
-                    </Link>
+                    <HoverCard key={link.id}>
+                      <HoverCardTrigger asChild>
+                        <Link
+                          key={link.id}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
+                          }}
+                          className="block text-white w-full p-4  rounded-lg font-medium text-center transition-colors capitalize text-[14px]">
+                          {link.platform}
+                        </Link>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-full">
+                        <LinkPreview url={link.url} />
+                      </HoverCardContent>
+                    </HoverCard>
                   );
                 })
               : Array.from({ length: 3 }).map((_, i) => (

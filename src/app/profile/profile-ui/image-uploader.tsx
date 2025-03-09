@@ -6,27 +6,13 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ImageIcon } from "lucide-react";
 import Image, { StaticImageData } from "next/image";
-
-interface ProgressBarProps {
-  progress: number;
-}
-
-export function ProgressBar({ progress }: ProgressBarProps) {
-  return (
-    <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
-      <motion.div
-        className="h-full bg-white"
-        initial={{ width: 0 }}
-        animate={{ width: `${progress}%` }}
-        transition={{ ease: "easeInOut" }}
-      />
-    </div>
-  );
-}
+import { useUserStore } from "@/store/useUserStore";
+import { toast } from "sonner";
 
 export function ImageUploader() {
+  const { updateUser, user } = useUserStore((store) => store);
   const [image, setImage] = useState<string | StaticImageData>(
-    "/placeholder.jpg"
+    user.user_image || "/placeholder.jpg"
   );
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -58,6 +44,14 @@ export function ImageUploader() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error("Image must be less than 5MB");
+      e.target.value = ""; // Reset input
+      return;
+    }
+
     handleUploadStart();
 
     try {
@@ -69,10 +63,13 @@ export function ImageUploader() {
           // After "upload" completes, set the image
           setTimeout(() => {
             setImage(result);
+            updateUser({ user_image: result });
           }, 2000);
         }
       };
       reader.readAsDataURL(file);
+
+      console.log("Uploading image:", file);
     } catch (error) {
       console.error("Error uploading image:", error);
       setIsUploading(false);
@@ -85,21 +82,13 @@ export function ImageUploader() {
 
   return (
     <div className="relative w-full aspect-square max-w-[240px]  rounded-md overflow-hidden">
-      {/* Background Image */}
-      {/* <div
-        className="w-full h-full bg-gray-200"
-        style={
-          image
-            ? {
-                backgroundImage: `url(${image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }
-            : {}
-        }
-      
-      /> */}
-      <Image src={image} sizes="100%" fill className=" object-cover" alt="" />
+      <Image
+        src={image}
+        sizes="100%"
+        fill
+        className=" object-cover"
+        alt="Avatar"
+      />
 
       {/* Overlay */}
       <motion.div
@@ -134,6 +123,23 @@ export function ImageUploader() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+interface ProgressBarProps {
+  progress: number;
+}
+
+function ProgressBar({ progress }: ProgressBarProps) {
+  return (
+    <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+      <motion.div
+        className="h-full bg-white"
+        initial={{ width: 0 }}
+        animate={{ width: `${progress}%` }}
+        transition={{ ease: "easeInOut" }}
+      />
     </div>
   );
 }

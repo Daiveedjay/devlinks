@@ -13,7 +13,7 @@ body {
 }
 .toast {
   background-color: var(--purple-primary) !important;
-  border: 1px solid var(--purple-light) !important;
+  border: 2px solid var(--purple-light) !important;
 }
 :root {
   --brand-default: #6c63ff;
