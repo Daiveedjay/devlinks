@@ -1,7 +1,7 @@
 import { CircleUserRound, Link as IconLink } from "lucide-react";
 import Link from "next/link";
 import Logo from "./logo";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { cookies } from "next/headers";
 export default async function Navbar() {
   // Read the pathname from cookies

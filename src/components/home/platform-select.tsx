@@ -17,13 +17,14 @@ import {
 } from "@/components/ui/popover";
 import { platforms } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useLinkStore } from "@/store/useLinkStore";
 import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Label } from "../ui/label";
-import { socialMediaSchema } from "@/lib/validation";
 
 interface PlatformSelectProps {
   value?: string;
+  id: string;
   onValueChange?: (value: string) => void;
   linkValue?: string;
   onLinkChange?: (value: string) => void;
@@ -33,12 +34,14 @@ interface PlatformSelectProps {
 export function PlatformSelect({
   value,
   onValueChange,
+  id,
   linkValue = "",
   onLinkChange,
   error,
 }: PlatformSelectProps) {
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value || "");
+  const { updateLink, errors } = useLinkStore((store) => store);
 
   const selectedPlatform = platforms.find(
     (platform) => platform.value === selectedValue
@@ -48,15 +51,25 @@ export function PlatformSelect({
     setSelectedValue(currentValue);
     onValueChange?.(currentValue);
     setOpen(false);
+
+    // Revalidate the link with the new platform
+    // if (linkValue) {
+    //   const result = socialMediaSchema.safeParse({
+    //     platform: currentValue,
+    //     url: linkValue,
+    //   });
+    //   // setLinkError(
+    //   //   result.success ? null : result.error.format().url?._errors[0] ?? null
+    //   // );
+    // }
   };
 
-  const [linkError, setLinkError] = useState<string | null>(null);
-
   const validateLink = (url: string) => {
-    const result = socialMediaSchema.safeParse({ platform: value, url });
-    setLinkError(
-      result.success ? null : result.error.format().url?._errors[0] ?? null
-    );
+    updateLink(id, { url }); // Update the link with the new URL
+    // const result = socialMediaSchema.safeParse({ platform: value, url });
+    // setLinkError(
+    //   result.success ? null : result.error.format().url?._errors[0] ?? null
+    // );
   };
 
   return (
@@ -132,7 +145,9 @@ export function PlatformSelect({
           )}
         />
       </div>
-      {linkError && <p className="text-sm text-red-error mt-1">{linkError}</p>}
+      {errors[id] && (
+        <p className="text-sm text-red-error mt-1">{errors[id]}</p>
+      )}
     </div>
   );
 }

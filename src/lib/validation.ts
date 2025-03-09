@@ -42,6 +42,21 @@ const platformRegexMap: Record<string, RegExp> = Object.fromEntries(
   })
 );
 
+const platformPatterns = {
+  github: /^https?:\/\/(www\.)?github\.com\/[\w-]+\/?$/,
+  twitter: /^https?:\/\/(www\.)?x\.com\/[\w-]+\/?$/,
+  linkedin: /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[\w-]+\/?$/,
+  facebook: /^https?:\/\/(www\.)?facebook\.com\/[\w-]+\/?$/,
+  youtube:
+    /^https?:\/\/(www\.)?(youtube\.com\/(@[\w-]+|c\/[\w-]+|channel\/[\w-]+|user\/[\w-]+|watch\?v=[\w-]+)|youtu\.be\/[\w-]+)\/?$/,
+
+  dribbble: /^https?:\/\/(www\.)?dribbble\.com\/[\w-]+\/?$/,
+  twitch: /^https?:\/\/(www\.)?twitch\.tv\/[\w-]+\/?$/,
+  devto: /^https?:\/\/(www\.)?dev\.to\/[\w-]+\/?$/,
+  website: /^https?:\/\/(www\.)?[\w-]+\.[a-zA-Z]{2,}.*$/, // General website rule
+  framer: /^https?:\/\/(www\.)?framer\.com\/[\w-]+\/?$/,
+};
+
 export const socialMediaSchema = z
   .object({
     platform: z.string().nonempty("Platform is required"),
@@ -52,7 +67,7 @@ export const socialMediaSchema = z
   })
   .refine(
     (data) => {
-      const regex = platformRegexMap[data.platform];
+      const regex = platformPatterns[data.platform];
       return !regex || regex.test(data.url);
     },
     {

@@ -101,7 +101,7 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
                           {link.platform}
                         </Link>
                       </HoverCardTrigger>
-                      <HoverCardContent className="w-full">
+                      <HoverCardContent className="w-full hover:bg-purple-light">
                         <LinkPreview url={link.url} />
                       </HoverCardContent>
                     </HoverCard>

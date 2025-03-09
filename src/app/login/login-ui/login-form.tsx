@@ -1,7 +1,7 @@
 "use client";
 
-import ErrorText from "@/components/error-text";
-import Logo from "@/components/logo";
+import ErrorText from "@/components/resusables/error-text";
+import Logo from "@/components/resusables/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

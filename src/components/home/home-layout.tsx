@@ -1,4 +1,4 @@
-import Navbar from "@/components/nav-bar";
+import Navbar from "@/components/resusables/nav-bar";
 import PhonePreview from "./phone-preview";
 import React from "react";
 import { User } from "@/store/useUserStore";

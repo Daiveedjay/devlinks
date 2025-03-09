@@ -1,4 +1,46 @@
+// import { create } from "zustand";
+
+// export interface Link {
+//   id: string;
+//   platform?: string;
+//   url: string;
+// }
+
+// interface LinkStore {
+//   links: Link[];
+//   addLink: () => void;
+//   // Partial<Link> allows us to update only the fields we want
+//   updateLink: (id: string, updatedData: Partial<Link>) => void;
+//   removeLink: (id: string) => void;
+
+// }
+
+// export const useLinkStore = create<LinkStore>((set) => ({
+//   links: [],
+
+//   addLink: () =>
+//     set((state) => ({
+//       links: [
+//         ...state.links,
+//         { id: crypto.randomUUID(), platform: "", url: "" }, // Unique ID for each link
+//       ],
+//     })),
+
+//   updateLink: (id, updatedData) =>
+//     set((state) => ({
+//       links: state.links.map((link) =>
+//         link.id === id ? { ...link, ...updatedData } : link
+//       ),
+//     })),
+
+//   removeLink: (id) =>
+//     set((state) => ({
+//       links: state.links.filter((link) => link.id !== id),
+//     })),
+// }));
+
 import { create } from "zustand";
+import { socialMediaSchema } from "@/lib/validation"; // Import your validation schema
 
 export interface Link {
   id: string;
@@ -8,32 +50,53 @@ export interface Link {
 
 interface LinkStore {
   links: Link[];
+  errors: Record<string, string | null>; // Store errors by link ID
   addLink: () => void;
-  // Partial<Link> allows us to update only the fields we want
   updateLink: (id: string, updatedData: Partial<Link>) => void;
   removeLink: (id: string) => void;
 }
 
 export const useLinkStore = create<LinkStore>((set) => ({
   links: [],
+  errors: {}, // Initialize errors as an empty object
 
   addLink: () =>
-    set((state) => ({
-      links: [
-        ...state.links,
-        { id: crypto.randomUUID(), platform: "", url: "" }, // Unique ID for each link
-      ],
-    })),
+    set((state) => {
+      const newId = crypto.randomUUID();
+      return {
+        links: [...state.links, { id: newId, platform: "", url: "" }],
+        errors: { ...state.errors, [newId]: null }, // Initialize error state for new link
+      };
+    }),
 
   updateLink: (id, updatedData) =>
-    set((state) => ({
-      links: state.links.map((link) =>
-        link.id === id ? { ...link, ...updatedData } : link
-      ),
-    })),
+    set((state) => {
+      // Find the link being updated
+      const link = state.links.find((link) => link.id === id);
+      if (!link) return state;
+
+      // Merge updates with existing link data
+      const newLinkData = { ...link, ...updatedData };
+
+      // Validate the updated link
+      const result = socialMediaSchema.safeParse(newLinkData);
+      const newError = result.success
+        ? null
+        : result.error.format().url?._errors[0] ?? null;
+
+      return {
+        links: state.links.map((l) => (l.id === id ? newLinkData : l)),
+        errors: { ...state.errors, [id]: newError }, // Store errors globally
+      };
+    }),
 
   removeLink: (id) =>
-    set((state) => ({
-      links: state.links.filter((link) => link.id !== id),
-    })),
+    set((state) => {
+      const newErrors = { ...state.errors };
+      delete newErrors[id]; // Remove error when deleting a link
+      return {
+        links: state.links.filter((link) => link.id !== id),
+        errors: newErrors,
+      };
+    }),
 }));

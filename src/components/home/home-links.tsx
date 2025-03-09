@@ -8,7 +8,8 @@ import { useLinkStore } from "@/store/useLinkStore";
 import { PlatformSelect } from "./platform-select";
 
 export default function HomeLinks() {
-  const { links, addLink } = useLinkStore((store) => store);
+  const { links, addLink, errors } = useLinkStore((store) => store);
+  const hasErrors = Object.values(errors).some((error) => error !== null);
 
   return (
     <div className="flex flex-col">
@@ -20,11 +21,12 @@ export default function HomeLinks() {
         </p>
         <Button variant="outline" className="w-full p-6" onClick={addLink}>
           Add new link
+          {/* <Spinner /> */}
         </Button>
       </div>
       {links.length === 0 ? <NoLinks /> : <LinksContainer />}
       <div className=" border-t-2 p-6 flex justify-end">
-        <Button className="px-8 py-6" variant="default">
+        <Button className="px-8 py-6" variant="default" disabled={hasErrors}>
           Save
         </Button>
       </div>
@@ -72,6 +74,7 @@ const LinksContainer = () => {
 
           <div className="mt-4 w-full">
             <PlatformSelect
+              id={link.id}
               value={link.platform}
               onValueChange={(val) => updateLink(link.id, { platform: val })}
               linkValue={link.url}
