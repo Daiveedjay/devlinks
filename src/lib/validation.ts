@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { platforms } from "./constants";
 
 // Login Form Schema
 export const loginSchema = z.object({
@@ -30,31 +29,22 @@ export const profileSchema = z.object({
   bio: z.string().min(1, { message: "Bio is required" }),
 });
 
-// Create regex patterns dynamically for validation
-const platformRegexMap: Record<string, RegExp> = Object.fromEntries(
-  platforms.map(({ value, placeholder }) => {
-    const regexPattern = `^${placeholder.replace(
-      /username|channelname/,
-      "[a-zA-Z0-9_-]+"
-    )}$`.replace(/\./g, "\\."); // Escape dots in domain
-
-    return [value, new RegExp(regexPattern)];
-  })
-);
-
 const platformPatterns = {
   github: /^https?:\/\/(www\.)?github\.com\/[\w-]+\/?$/,
   twitter: /^https?:\/\/(www\.)?x\.com\/[\w-]+\/?$/,
   linkedin: /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[\w-]+\/?$/,
-  facebook: /^https?:\/\/(www\.)?facebook\.com\/[\w-]+\/?$/,
+  facebook:
+    /^https?:\/\/(www\.|web\.)?facebook\.com\/(profile\.php\?id=\d+|[\w.-]+)\/?$/,
+
   youtube:
     /^https?:\/\/(www\.)?(youtube\.com\/(@[\w-]+|c\/[\w-]+|channel\/[\w-]+|user\/[\w-]+|watch\?v=[\w-]+)|youtu\.be\/[\w-]+)\/?$/,
 
   dribbble: /^https?:\/\/(www\.)?dribbble\.com\/[\w-]+\/?$/,
   twitch: /^https?:\/\/(www\.)?twitch\.tv\/[\w-]+\/?$/,
   devto: /^https?:\/\/(www\.)?dev\.to\/[\w-]+\/?$/,
-  website: /^https?:\/\/(www\.)?[\w-]+\.[a-zA-Z]{2,}.*$/, // General website rule
-  framer: /^https?:\/\/(www\.)?framer\.com\/[\w-]+\/?$/,
+  website:
+    /^(?:(?:https?:\/\/)?(?:www\.)?|(?:www\.)?)[\w-]+\.[a-zA-Z]{2,}(\S+)?$/,
+  framer: /^https?:\/\/(www\.)?framer\.com\/@[\w-]+\/?$/,
 };
 
 export const socialMediaSchema = z

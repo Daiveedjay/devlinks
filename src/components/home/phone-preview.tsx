@@ -12,6 +12,7 @@ import {
   HoverCardTrigger,
 } from "../ui/hover-card";
 import LinkPreview from "./link-preview";
+import { ArrowRight } from "lucide-react";
 
 interface PhonePreviewProps {
   profile: User;
@@ -20,12 +21,14 @@ interface PhonePreviewProps {
 
 export default function PhonePreview({ profile }: PhonePreviewProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const links = useLinkStore((store) => store.links);
+  const { links, errors } = useLinkStore((store) => store);
 
   const { username, bio, user_image } = useUserStore((store) => store.user);
 
+  // Check if there's an error for this link
+
   return (
-    <div className="relative w-[280px]  h-[575px]">
+    <div className="relative preview__component w-[280px]  h-[575px]">
       {" "}
       {/* Adjusted to 280x575 */}
       {/* Phone Frame SVG */}
@@ -86,24 +89,33 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
             {links.length > 0
               ? links.map((link) => {
                   const brand = link.platform?.toLowerCase() || "default";
+                  const hasError = !!errors[link.id];
                   return (
                     <HoverCard key={link.id}>
                       <HoverCardTrigger asChild>
                         <Link
-                          key={link.id}
-                          href={link.url}
-                          target="_blank"
+                          href={hasError ? "#" : link.url} // Prevent navigation if there's an error
+                          target={hasError ? "_self" : "_blank"}
                           rel="noopener noreferrer"
                           style={{
                             backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
                           }}
-                          className="block text-white w-full p-4  rounded-lg font-medium text-center transition-colors capitalize text-[14px]">
-                          {link.platform}
+                          className={` items-center justify-between text-white w-full p-4 rounded-lg font-medium text-center flex transition-colors capitalize text-[14px] ${
+                            hasError ? "opacity-50 pointer-events-none" : ""
+                          }`}>
+                          <span> {link.platform}</span>
+                          {!hasError && link.url !== "" ? (
+                            <span>
+                              <ArrowRight size={16} />
+                            </span>
+                          ) : null}
                         </Link>
                       </HoverCardTrigger>
-                      <HoverCardContent className="w-full hover:bg-purple-light">
-                        <LinkPreview url={link.url} />
-                      </HoverCardContent>
+                      {!hasError ? (
+                        <HoverCardContent className="w-full hover:bg-purple-light">
+                          <LinkPreview url={link.url} />
+                        </HoverCardContent>
+                      ) : null}
                     </HoverCard>
                   );
                 })

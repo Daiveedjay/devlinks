@@ -1,6 +1,6 @@
 "use client";
 
-import { Equal, Trash2 } from "lucide-react";
+import { Equal, Grip, Trash2 } from "lucide-react";
 import GetStarted from "../icons/get-started";
 import { Button } from "../ui/button";
 
@@ -21,12 +21,14 @@ export default function HomeLinks() {
         </p>
         <Button variant="outline" className="w-full p-6" onClick={addLink}>
           Add new link
-          {/* <Spinner /> */}
         </Button>
       </div>
       {links.length === 0 ? <NoLinks /> : <LinksContainer />}
       <div className=" border-t-2 p-6 flex justify-end">
-        <Button className="px-8 py-6" variant="default" disabled={hasErrors}>
+        <Button
+          className="px-8 py-6 disabled:!cursor-not-allowed"
+          variant="default"
+          disabled={hasErrors}>
           Save
         </Button>
       </div>
@@ -64,12 +66,18 @@ const LinksContainer = () => {
               <Equal />
               <span className="font-bold">Link #{index + 1}</span>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => removeLink(link.id)}>
-              <Trash2 className=" text-red-error" />
-            </Button>
+            <div className=" flex justify-center items-center gap-4">
+              <div className="hover:cursor-grab hover:bg-purple-light p-3 rounded-md">
+                <Grip size={16} />
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className=" hover:bg-red-error/20"
+                onClick={() => removeLink(link.id)}>
+                <Trash2 className=" text-red-error" />
+              </Button>
+            </div>
           </div>
 
           <div className="mt-4 w-full">

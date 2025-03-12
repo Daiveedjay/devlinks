@@ -51,25 +51,10 @@ export function PlatformSelect({
     setSelectedValue(currentValue);
     onValueChange?.(currentValue);
     setOpen(false);
-
-    // Revalidate the link with the new platform
-    // if (linkValue) {
-    //   const result = socialMediaSchema.safeParse({
-    //     platform: currentValue,
-    //     url: linkValue,
-    //   });
-    //   // setLinkError(
-    //   //   result.success ? null : result.error.format().url?._errors[0] ?? null
-    //   // );
-    // }
   };
 
   const validateLink = (url: string) => {
     updateLink(id, { url }); // Update the link with the new URL
-    // const result = socialMediaSchema.safeParse({ platform: value, url });
-    // setLinkError(
-    //   result.success ? null : result.error.format().url?._errors[0] ?? null
-    // );
   };
 
   return (
@@ -139,7 +124,7 @@ export function PlatformSelect({
           onBlur={() => validateLink(linkValue)}
           disabled={!selectedPlatform}
           className={cn(
-            "h-12 border-gray-light focus:border-purple-primary focus:ring-2 focus:ring-purple-light",
+            "h-12 font-medium !text-gray-dark border-gray-light focus:border-purple-primary focus:ring-2 focus:ring-purple-light",
             error &&
               "border-red-error focus:border-red-error focus:ring-red-100"
           )}
