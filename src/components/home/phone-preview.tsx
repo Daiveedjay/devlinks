@@ -1,18 +1,19 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useFetchLinks } from "@/queries/useLinks";
 import { Link as LinkType, useLinkStore } from "@/store/useLinkStore";
 import { User, useUserStore } from "@/store/useUserStore";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "../ui/hover-card";
 import LinkPreview from "./link-preview";
-import { ArrowRight } from "lucide-react";
+// import { useLinks } from "@/queries/useLinks";
 
 interface PhonePreviewProps {
   profile: User;
@@ -20,10 +21,15 @@ interface PhonePreviewProps {
 }
 
 export default function PhonePreview({ profile }: PhonePreviewProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const { links, errors } = useLinkStore((store) => store);
+  // const [isLoading, setIsLoading] = useState(true);
+  const { errors, previewLinks } = useLinkStore((store) => store);
 
   const { username, bio, user_image } = useUserStore((store) => store.user);
+
+  // Add useLinks hook to get the data
+  const { isLoading } = useFetchLinks("1");
+
+  console.log("Preview Links", previewLinks);
 
   // Check if there's an error for this link
 
@@ -67,13 +73,13 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
                   ? "scale-110 blur-2xl grayscale"
                   : "scale-100 blur-0 grayscale-0"
               )}
-              onLoad={() => setIsLoading(false)}
+              // onLoad={() => setIsLoading(false)}
             />
           </div>
 
           {/* Profile Name */}
           <h1 className="text-base font-bold text-gray-dark mb-[4px]">
-            @{username || "John Doe"}
+            @{username || "Baby boy"}
           </h1>
 
           {/* Profile Email */}
@@ -86,15 +92,15 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
 
           {/* Links */}
           <div className="w-full space-y-4">
-            {links.length > 0
-              ? links.map((link) => {
-                  const brand = link.platform?.toLowerCase() || "default";
-                  const hasError = !!errors[link.id];
+            {previewLinks?.length > 0
+              ? previewLinks?.map((link) => {
+                  const brand = link.Platform?.toLowerCase() || "default";
+                  const hasError = !!errors[link.ID];
                   return (
-                    <HoverCard key={link.id}>
+                    <HoverCard key={link.ID}>
                       <HoverCardTrigger asChild>
                         <Link
-                          href={hasError ? "#" : link.url} // Prevent navigation if there's an error
+                          href={hasError ? "#" : link.URL} // Prevent navigation if there's an error
                           target={hasError ? "_self" : "_blank"}
                           rel="noopener noreferrer"
                           style={{
@@ -103,8 +109,8 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
                           className={` items-center justify-between text-white w-full p-4 rounded-lg font-medium text-center flex transition-colors capitalize text-[14px] ${
                             hasError ? "opacity-50 pointer-events-none" : ""
                           }`}>
-                          <span> {link.platform}</span>
-                          {!hasError && link.url !== "" ? (
+                          <span> {link.Platform}</span>
+                          {!hasError && link.URL !== "" ? (
                             <span>
                               <ArrowRight size={16} />
                             </span>
@@ -113,7 +119,7 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
                       </HoverCardTrigger>
                       {!hasError ? (
                         <HoverCardContent className="w-full hover:bg-purple-light">
-                          <LinkPreview url={link.url} />
+                          <LinkPreview url={link.URL} />
                         </HoverCardContent>
                       ) : null}
                     </HoverCard>

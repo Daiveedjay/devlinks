@@ -8,6 +8,7 @@ import Link from "next/link";
 
 export default function Page() {
   const links = useLinkStore((store) => store.links);
+  console.log("Links", links);
   const { username, bio, user_image, email } = useUserStore(
     (store) => store.user
   );
@@ -47,18 +48,18 @@ export default function Page() {
             </p>
           </div>
           <ul className=" mt-14 w-full text-white flex flex-col gap-4">
-            {links.map((link) => {
-              const brand = link.platform?.toLowerCase() || "default";
+            {links?.map((link) => {
+              const brand = link.Platform?.toLowerCase() || "default";
               return (
                 <Link
-                  href={link.url}
+                  href={link.URL}
                   target="_blank"
                   className="p-4 rounded-[6px] bg-purple-primary w-full capitalize flex justify-between items-center"
                   style={{
                     backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
                   }}
-                  key={link.id}>
-                  <span> {link.platform}</span>
+                  key={link.ID}>
+                  <span> {link.Platform}</span>
                   <span>
                     <ArrowRight size={16} />
                   </span>

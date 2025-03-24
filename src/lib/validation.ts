@@ -49,16 +49,28 @@ const platformPatterns = {
 
 export const socialMediaSchema = z
   .object({
-    platform: z.string().nonempty("Platform is required"),
-    url: z
+    Platform: z.enum([
+      "github",
+      "twitter",
+      "linkedin",
+      "facebook",
+      "youtube",
+      "dribbble",
+      "twitch",
+      "devto",
+      "website",
+      "framer",
+    ]),
+    URL: z
       .string()
       .url("Invalid URL format")
       .regex(/^https?:\/\//, "Link must start with http:// or https://"),
   })
   .refine(
     (data) => {
-      const regex = platformPatterns[data.platform];
-      return !regex || regex.test(data.url);
+      //
+      const regex = platformPatterns[data.Platform];
+      return !regex || regex.test(data.URL);
     },
     {
       message: "The URL does not match the selected platform.",

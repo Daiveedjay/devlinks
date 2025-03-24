@@ -24,7 +24,7 @@ import { Label } from "../ui/label";
 
 interface PlatformSelectProps {
   value?: string;
-  id: string;
+  id: number;
   onValueChange?: (value: string) => void;
   linkValue?: string;
   onLinkChange?: (value: string) => void;
@@ -53,8 +53,8 @@ export function PlatformSelect({
     setOpen(false);
   };
 
-  const validateLink = (url: string) => {
-    updateLink(id, { url }); // Update the link with the new URL
+  const validateLink = (URL: string) => {
+    updateLink(id, { URL }); // Update the link with the new URL
   };
 
   return (
@@ -91,7 +91,7 @@ export function PlatformSelect({
               <CommandList>
                 <CommandEmpty>No platform found.</CommandEmpty>
                 <CommandGroup className="max-h-[300px] overflow-auto">
-                  {platforms.map((platform) => (
+                  {platforms?.map((platform) => (
                     <CommandItem
                       key={platform.value}
                       value={platform.value}

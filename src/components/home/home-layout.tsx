@@ -19,22 +19,22 @@ export default function HomeLayout({
 
   const mockLinks = [
     {
-      id: "1",
+      ID: "1",
       title: "My Portfolio",
-      url: "https://example.com",
-      platform: "portfolio",
+      URL: "https://example.com",
+      Platform: "portfolio",
     },
     {
-      id: "2",
+      ID: "2",
       title: "My GitHub",
-      url: "https://github.com",
-      platform: "github",
+      URL: "https://github.com",
+      Platform: "github",
     },
     {
-      id: "3",
+      ID: "3",
       title: "My LinkedIn",
-      url: "https://linkedin.com",
-      platform: "linkedin",
+      URL: "https://linkedin.com",
+      Platform: "linkedin",
     },
   ];
 

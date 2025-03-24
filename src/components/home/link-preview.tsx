@@ -8,19 +8,15 @@ import { platforms } from "@/lib/constants";
 export default function LinkPreview({ url }: { url: string }) {
   const { data: preview, isLoading, error } = useLinkPreview(url);
 
-  // Extract hostname to check if it's allowed
   const hostname = useMemo(() => {
     try {
-      return new URL(preview?.image).hostname;
+      return preview?.image ? new URL(preview.image).hostname : null;
     } catch {
       return null;
     }
   }, [preview?.image]);
 
-  console.log("loading", isLoading);
-  console.log("preview", error);
-
-  if (!url || url === "")
+  if (!url)
     return <span className="text-sm text-red-error">No link provided</span>;
 
   if (isLoading)
@@ -32,17 +28,16 @@ export default function LinkPreview({ url }: { url: string }) {
 
   if (error || !preview)
     return (
-      <p className="text-sm text-red-error">
-        Failed to load preview, check the link you inputted
+      <p className="text-sm max-w-[200px] text-red-error">
+        You caught us... We can&apos;t show the preview for this link yet.
       </p>
     );
 
-  // Only allow images from configured domains
   const isAllowedImage =
     hostname &&
     platforms
       .map((platform) => platform.domainAvatar)
-      .filter(Boolean) // Remove undefined values (like website platform)
+      .filter(Boolean)
       .includes(hostname);
 
   return (
