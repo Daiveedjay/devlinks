@@ -103,21 +103,21 @@ const API_URL = "http://localhost:8080/links";
 
 // TODO
 export const fetchLinks = async (
-  setPreviewLinks: (links: Link[]) => void
+  setLinks: (links: Link[]) => void
 ): Promise<ApiResponse> => {
   const response = await fetch(API_URL);
   const data: ApiResponse = await response.json();
   console.log("Data", data);
-  setPreviewLinks(data.data ?? []);
+  setLinks(data.data ?? []);
   return data;
 };
 
 export const useFetchLinks = (userId: string) => {
-  const setPreviewLinks = useLinkStore((store) => store.setPreviewLinks);
+  const setLinks = useLinkStore((store) => store.setLinks);
 
   return useQuery({
     queryKey: ["links", userId],
-    queryFn: () => fetchLinks(setPreviewLinks), // Pass the setter directly to the fetch function
+    queryFn: () => fetchLinks(setLinks), // Pass the setter directly to the fetch function
     enabled: !!userId, // Ensures the query only runs if userId is defined
     staleTime: 1000 * 60 * 30, // 30 mins
   });
@@ -137,9 +137,7 @@ const addLink = async (newLinks: Link | Link[]): Promise<ApiResponse> => {
 };
 
 export const useAddLink = (userId: string) => {
-  const { setPreviewLinks, previewLinks, setLinks } = useLinkStore(
-    (store) => store
-  );
+  const { setLinks, links, markLinkAsSaved } = useLinkStore((store) => store);
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -148,13 +146,11 @@ export const useAddLink = (userId: string) => {
     onMutate: async (newLinks) => {
       // Cancel the existing query to prevent it from updating the cache with the new data
       await queryClient.cancelQueries({ queryKey: ["links", userId] });
-      const previousLinks = previewLinks;
+      const previousLinks = links;
 
       // Handle both single and multiple links
       const linksToAdd = Array.isArray(newLinks) ? newLinks : [newLinks];
-      setPreviewLinks([...previousLinks, ...linksToAdd]);
-      // Clear the links state to prevent duplicates
-      setLinks([]);
+      setLinks([...previousLinks, ...linksToAdd]);
 
       return { previousLinks };
     },
@@ -162,94 +158,65 @@ export const useAddLink = (userId: string) => {
     onError: (_, __, context) => {
       // On error, rollback to the previous state
       if (context?.previousLinks) {
-        setPreviewLinks(context.previousLinks);
+        setLinks(context.previousLinks);
       }
+    },
+    onSuccess: (apiResponse, newLinks) => {
+      // Normalize newLinks to an array.
+      const linksToReplace = Array.isArray(newLinks) ? newLinks : [newLinks];
+      const idsToReplace = new Set(linksToReplace.map((link) => link.ID));
+
+      // Filter out the local optimistic links.
+      const filtered = links.filter((link) => !idsToReplace.has(link.ID));
+
+      // Assume that apiResponse.data contains the newly added links from the backend.
+      const newLinksFromApi = apiResponse.data;
+
+      // Replace the local links with the ones from the API.
+      setLinks([...filtered, ...newLinksFromApi]);
+
+      // For each new link from the API, update its flags so the UI knows it's saved.
+      newLinksFromApi.forEach((link) => {
+        markLinkAsSaved(link.ID);
+      });
     },
   });
 };
 
 // Update link function
-interface UpdatePayload {
-  id: number;
-  updates: Partial<Link>;
-}
+const updateLink = async (id: number, link: Link): Promise<ApiResponse> => {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(link),
+  });
 
-const updateLink = async (
-  updates: UpdatePayload | UpdatePayload[]
-): Promise<ApiResponse> => {
-  const isMultiple = Array.isArray(updates);
-
-  if (isMultiple) {
-    // Handle multiple updates
-    const response = await fetch(`${API_URL}/batch`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ updates }),
-    });
-    return response.json();
-  } else {
-    // Handle single update
-    const { id, updates: linkUpdates } = updates as UpdatePayload;
-    const response = await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(linkUpdates),
-    });
-    return response.json();
-  }
+  return response.json();
 };
 
 export const useUpdateLink = (userId: string) => {
-  const { setLinks, links } = useLinkStore((store) => store);
+  const { links, setLinks } = useLinkStore((store) => store);
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (updates: UpdatePayload | UpdatePayload[]) =>
-      updateLink(updates),
+    mutationFn: (data: { id: number; link: Link }) =>
+      updateLink(data.id, data.link),
 
-    onMutate: async (updates) => {
+    onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: ["links", userId] });
       const previousLinks = links;
 
-      // Handle both single and multiple updates
-      const updatesToApply = Array.isArray(updates) ? updates : [updates];
-      const optimisticLinks = [...links];
-
-      // Apply all updates optimistically
-      updatesToApply.forEach(({ id, updates: linkUpdates }) => {
-        const index = optimisticLinks.findIndex((link) => link.ID === id);
-        if (index !== -1) {
-          optimisticLinks[index] = {
-            ...optimisticLinks[index],
-            ...linkUpdates,
-          };
-        }
-      });
-
+      // Optimistically modify the links
+      const optimisticLinks = previousLinks.map((link) =>
+        link.ID === data.id ? { ...link, ...data.link } : link
+      );
       setLinks(optimisticLinks);
       return { previousLinks };
     },
-
     onError: (_, __, context) => {
       if (context?.previousLinks) {
         setLinks(context.previousLinks);
       }
-    },
-
-    onSuccess: (data, variables) => {
-      const updatesToApply = Array.isArray(variables) ? variables : [variables];
-
-      // Create map of updated IDs to their new data
-      const updatedMap = new Map(
-        data.data.map((updated, i) => [updatesToApply[i].id, updated])
-      );
-
-      // Update links with server response data
-      const updatedLinks = links.map((link) =>
-        updatedMap.has(link.ID) ? updatedMap.get(link.ID)! : link
-      );
-
-      setLinks(updatedLinks);
     },
   });
 };
@@ -263,7 +230,7 @@ const deleteLink = async (id: number): Promise<ApiResponse> => {
 };
 
 export const useDeleteLink = (userId: string) => {
-  const { previewLinks, setPreviewLinks } = useLinkStore((store) => store);
+  const { links, setLinks } = useLinkStore((store) => store);
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -271,18 +238,18 @@ export const useDeleteLink = (userId: string) => {
 
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ["links", userId] });
-      const previousLinks = previewLinks;
+      const previousLinks = links;
 
       // Optimistically remove the link
       const optimisticLinks = previousLinks.filter((link) => link.ID !== id);
 
-      setPreviewLinks(optimisticLinks);
+      setLinks(optimisticLinks);
       return { previousLinks };
     },
 
     onError: (_, __, context) => {
       if (context?.previousLinks) {
-        setPreviewLinks(context.previousLinks);
+        setLinks(context.previousLinks);
       }
     },
   });

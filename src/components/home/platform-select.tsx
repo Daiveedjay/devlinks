@@ -53,9 +53,7 @@ export function PlatformSelect({
     setOpen(false);
   };
 
-  const validateLink = (URL: string) => {
-    updateLink(id, { URL }); // Update the link with the new URL
-  };
+  const validateLink = (URL: string) => updateLink(id, { URL }); // Update the link with the new URL
 
   return (
     <div className="space-y-4">

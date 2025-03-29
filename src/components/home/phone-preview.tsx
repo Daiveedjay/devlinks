@@ -2,11 +2,13 @@
 
 import { cn } from "@/lib/utils";
 import { useFetchLinks } from "@/queries/useLinks";
-import { Link as LinkType, useLinkStore } from "@/store/useLinkStore";
-import { User, useUserStore } from "@/store/useUserStore";
+import { useLinkStore } from "@/store/useLinkStore";
+import { useUserStore } from "@/store/useUserStore";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import {
   HoverCard,
   HoverCardContent,
@@ -15,21 +17,25 @@ import {
 import LinkPreview from "./link-preview";
 // import { useLinks } from "@/queries/useLinks";
 
-interface PhonePreviewProps {
-  profile: User;
-  links?: LinkType[];
-}
+export default function PhonePreview() {
+  const pathname = usePathname();
+  const cleanupEmptyLinks = useLinkStore((store) => store.cleanupEmptyLinks);
 
-export default function PhonePreview({ profile }: PhonePreviewProps) {
+  useEffect(() => {
+    cleanupEmptyLinks();
+  }, [pathname, cleanupEmptyLinks]);
+
   // const [isLoading, setIsLoading] = useState(true);
-  const { errors, previewLinks } = useLinkStore((store) => store);
+  const { errors, links } = useLinkStore((store) => store);
 
-  const { username, bio, user_image } = useUserStore((store) => store.user);
+  const { username, bio, user_image, email } = useUserStore(
+    (store) => store.user
+  );
 
   // Add useLinks hook to get the data
   const { isLoading } = useFetchLinks("1");
 
-  console.log("Preview Links", previewLinks);
+  console.log("Preview Links", links);
 
   // Check if there's an error for this link
 
@@ -84,7 +90,7 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
 
           {/* Profile Email */}
           <p className="text-[14px] text-gray-medium mb-[8px]">
-            {profile?.email || "email@example.com"}
+            {email || "email@example.com"}
           </p>
           <p className="text-[14px] text-gray-medium mb-[24px]">
             {bio || " An amazing bio goes here"}
@@ -92,8 +98,8 @@ export default function PhonePreview({ profile }: PhonePreviewProps) {
 
           {/* Links */}
           <div className="w-full space-y-4">
-            {previewLinks?.length > 0
-              ? previewLinks?.map((link) => {
+            {links?.length > 0
+              ? links?.map((link) => {
                   const brand = link.Platform?.toLowerCase() || "default";
                   const hasError = !!errors[link.ID];
                   return (

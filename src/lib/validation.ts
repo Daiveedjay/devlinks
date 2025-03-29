@@ -74,6 +74,6 @@ export const socialMediaSchema = z
     },
     {
       message: "The URL does not match the selected platform.",
-      path: ["url"],
+      path: ["URL"],
     }
   );
