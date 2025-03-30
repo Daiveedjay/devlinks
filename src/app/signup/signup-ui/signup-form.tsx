@@ -1,17 +1,21 @@
 "use client";
 
-import ErrorText from "@/components/resusables/error-text";
-import Logo from "@/components/resusables/logo";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { toast } from "sonner";
+import { Mail, Lock, Eye, EyeOff, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signupSchema } from "@/lib/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeClosed, Lock, Mail } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import ErrorText from "@/components/resusables/error-text";
+import Logo from "@/components/resusables/logo";
+import GoogleIcon from "@/components/icons/google-icon";
+import { AnimatePresence } from "framer-motion";
+
+// Assuming these components exist in your project
 
 export default function SignupForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -30,8 +34,28 @@ export default function SignupForm() {
     toast("Account created successfully!");
   };
 
+  const handleGoogleSignup = async () => {
+    try {
+      // Implement Google signup logic here
+      console.log("Signing up with Google");
+      // Example: await signUpWithGoogle();
+    } catch (error) {
+      toast.error("Failed to sign up with Google");
+    }
+  };
+
+  const handleGithubSignup = async () => {
+    try {
+      // Implement GitHub signup logic here
+      console.log("Signing up with GitHub");
+      // Example: await signUpWithGithub();
+    } catch (error) {
+      toast.error("Failed to sign up with GitHub");
+    }
+  };
+
   return (
-    <div className="w-full max-w-md bg-white  p-8 shadow-sm rounded-md">
+    <div className="w-full max-w-md bg-white p-8 shadow-sm rounded-md">
       <div className="flex items-center justify-center mb-16">
         <Logo />
       </div>
@@ -43,6 +67,36 @@ export default function SignupForm() {
         <p className="text-gray-medium">
           Let&apos;s get you started sharing your links!
         </p>
+      </div>
+
+      {/* Social Signup Buttons */}
+      <div className="space-y-4 mb-6">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
+          onClick={handleGoogleSignup}>
+          <GoogleIcon />
+          Continue with Google
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
+          onClick={handleGithubSignup}>
+          <Github className="w-5 h-5 mr-2" />
+          Continue with GitHub
+        </Button>
+      </div>
+
+      {/* Divider */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-light"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-gray-medium">or</span>
+        </div>
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -62,7 +116,7 @@ export default function SignupForm() {
               className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
             />
           </div>
-          {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
+          <ErrorText value={errors.email} />
         </div>
 
         <div className="space-y-2">
@@ -81,16 +135,17 @@ export default function SignupForm() {
               className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
             />
             <div
-              className="absolute inset-y-0 right-3 flex items-center"
+              className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? (
-                <EyeClosed className="h-5 w-5 text-gray-medium cursor-pointer" />
+                <EyeOff className="h-5 w-5 text-gray-medium" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-medium cursor-pointer" />
+                <Eye className="h-5 w-5 text-gray-medium" />
               )}
             </div>
           </div>
-          {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
+
+          <ErrorText value={errors.password}></ErrorText>
         </div>
 
         <div className="space-y-2">
@@ -109,18 +164,17 @@ export default function SignupForm() {
               className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
             />
             <div
-              className="absolute inset-y-0 right-3 flex items-center"
+              className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? (
-                <EyeClosed className="h-5 w-5 text-gray-medium cursor-pointer" />
+                <EyeOff className="h-5 w-5 text-gray-medium" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-medium cursor-pointer" />
+                <Eye className="h-5 w-5 text-gray-medium" />
               )}
             </div>
           </div>
-          {errors.confirmPassword ? (
-            <ErrorText>{errors.confirmPassword.message}</ErrorText>
-          ) : (
+          <ErrorText value={errors.confirmPassword} />
+          {!errors.confirmPassword && (
             <p className="text-sm text-gray-medium mt-1">
               Password must contain at least 8 characters
             </p>

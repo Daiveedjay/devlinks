@@ -84,4 +84,9 @@ export const platforms = [
   },
 ];
 
-// const allowedDomainPlatforms
+export const defaulttMotionConfig = {
+  initial: { maxHeight: 0, margin: 0 },
+  animate: { maxHeight: 150, marginTop: 16 },
+  exit: { maxHeight: 0, marginTop: 0 },
+  transition: { duration: 0.3, ease: [0.4, 0.0, 0.2, 1] }, // Cubic bezier
+};

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { PlatformSelect } from "./platform-select";
 import { AnimatePresence, motion } from "framer-motion";
+import { defaulttMotionConfig } from "@/lib/constants";
 
 export default function LinksContainer() {
   const { links, errors, updateLink, setLinks } = useLinkStore(
@@ -80,20 +81,8 @@ export default function LinksContainer() {
           <AnimatePresence>
             {linksToDelete.has(link.ID) && !link.isNew && (
               <motion.div
-                className="mt-4 bg-purple-light text-white rounded-md overflow-hidden"
-                initial={{ maxHeight: 0, margin: 0 }}
-                animate={{
-                  maxHeight: 150,
-                  marginTop: 16,
-                }}
-                exit={{
-                  maxHeight: 0,
-                  marginTop: 0,
-                }}
-                transition={{
-                  duration: 0.3,
-                  ease: [0.4, 0.0, 0.2, 1], // Cubic bezier
-                }}>
+                {...defaulttMotionConfig}
+                className="mt-4 bg-purple-light text-white rounded-md overflow-hidden">
                 <div className="p-4">
                   <h3 className="text-center font-bold text-gray-dark mb-4">
                     Delete this link?
@@ -120,19 +109,7 @@ export default function LinksContainer() {
             {link.dirty && !errors[link.ID] && (
               <motion.div
                 className="flex justify-end overflow-hidden"
-                initial={{ maxHeight: 0, margin: 0 }}
-                animate={{
-                  maxHeight: 50,
-                  marginTop: 16,
-                }}
-                exit={{
-                  maxHeight: 0,
-                  marginTop: 0,
-                }}
-                transition={{
-                  duration: 0.3,
-                  ease: [0.4, 0.0, 0.2, 1], // Same cubic bezier as delete animation
-                }}>
+                {...defaulttMotionConfig}>
                 <Button className="mt-0" onClick={() => handleUpdate(link.ID)}>
                   Save
                 </Button>

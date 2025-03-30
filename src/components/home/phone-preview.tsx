@@ -7,8 +7,6 @@ import { useUserStore } from "@/store/useUserStore";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 import {
   HoverCard,
   HoverCardContent,
@@ -18,13 +16,6 @@ import LinkPreview from "./link-preview";
 // import { useLinks } from "@/queries/useLinks";
 
 export default function PhonePreview() {
-  const pathname = usePathname();
-  const cleanupEmptyLinks = useLinkStore((store) => store.cleanupEmptyLinks);
-
-  useEffect(() => {
-    cleanupEmptyLinks();
-  }, [pathname, cleanupEmptyLinks]);
-
   // const [isLoading, setIsLoading] = useState(true);
   const { errors, links } = useLinkStore((store) => store);
 

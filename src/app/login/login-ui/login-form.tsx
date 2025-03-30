@@ -1,5 +1,6 @@
 "use client";
 
+import GoogleIcon from "@/components/icons/google-icon";
 import ErrorText from "@/components/resusables/error-text";
 import Logo from "@/components/resusables/logo";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeClosed, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Github, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -28,13 +29,33 @@ export default function LoginForm() {
 
   const onSubmit = (data: unknown) => {
     console.log("Login Data:", data);
-    toast.success("Event has been created.");
+    toast.success("Login successful.");
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      // Implement Google login logic here
+      console.log("Logging in with Google");
+      // Example: await signInWithGoogle();
+    } catch (error) {
+      toast.error("Failed to login with Google");
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    try {
+      // Implement GitHub login logic here
+      console.log("Logging in with GitHub");
+      // Example: await signInWithGithub();
+    } catch (error) {
+      toast.error("Failed to login with GitHub");
+    }
   };
 
   return (
-    <div className="w-full max-w-md bg-white  p-8 shadow-sm rounded-md">
+    <div className="w-full max-w-md bg-white p-8 shadow-sm rounded-md">
       <div className="flex items-center justify-center mb-16">
-        <div className=" rounded-lg flex items-center justify-center">
+        <div className="rounded-lg flex items-center justify-center">
           <Logo />
         </div>
       </div>
@@ -44,6 +65,36 @@ export default function LoginForm() {
         <p className="text-gray-medium">
           Add your details below to get back into the app
         </p>
+      </div>
+
+      {/* Social Login Buttons */}
+      <div className="space-y-4 mb-6">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
+          onClick={handleGoogleLogin}>
+          <GoogleIcon />
+          Continue with Google
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
+          onClick={handleGithubLogin}>
+          <Github className="w-5 h-5 mr-2" />
+          Continue with GitHub
+        </Button>
+      </div>
+
+      {/* Divider */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-light"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-gray-medium">or</span>
+        </div>
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -79,15 +130,15 @@ export default function LoginForm() {
               {...register("password")}
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className=" pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
+              className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
             />
             <div
-              className="absolute inset-y-0 right-3 flex items-center"
+              className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? (
-                <EyeClosed className="h-5 w-5 text-gray-medium cursor-pointer" />
+                <EyeOff className="h-5 w-5 text-gray-medium" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-medium cursor-pointer" />
+                <Eye className="h-5 w-5 text-gray-medium" />
               )}
             </div>
           </div>
