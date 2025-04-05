@@ -84,9 +84,44 @@ export const platforms = [
   },
 ];
 
-export const defaulttMotionConfig = {
+export const defaultMotionConfig = {
   initial: { maxHeight: 0, margin: 0 },
   animate: { maxHeight: 150, marginTop: 16 },
   exit: { maxHeight: 0, marginTop: 0 },
   transition: { duration: 0.3, ease: [0.4, 0.0, 0.2, 1] }, // Cubic bezier
+};
+
+export const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
+
+export const HAMBURGER_VARIANTS = {
+  top: {
+    open: {
+      rotate: ["0deg", "0deg", "45deg"],
+      top: ["35%", "50%", "50%"],
+    },
+    closed: {
+      rotate: ["45deg", "0deg", "0deg"],
+      top: ["50%", "50%", "35%"],
+    },
+  },
+  middle: {
+    open: {
+      rotate: ["0deg", "0deg", "-45deg"],
+    },
+    closed: {
+      rotate: ["-45deg", "0deg", "0deg"],
+    },
+  },
+  bottom: {
+    open: {
+      rotate: ["0deg", "0deg", "45deg"],
+      bottom: ["35%", "50%", "50%"],
+      left: "50%",
+    },
+    closed: {
+      rotate: ["45deg", "0deg", "0deg"],
+      bottom: ["50%", "50%", "35%"],
+      left: "calc(50% + 10px)",
+    },
+  },
 };

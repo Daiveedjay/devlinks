@@ -3,14 +3,16 @@
 import { Button } from "../ui/button";
 
 // import { fetchLinks, useAddLink } from "@/queries/useLinks";
-import { useAddLink } from "@/queries/useLinks";
+
 import { useLinkStore } from "@/store/useLinkStore";
 import LinksContainer from "./links-container";
 import NoLinks from "./no-links";
+import { useAddLink } from "@/queries/links/addLinks";
+import { fetchLinks } from "@/queries/links/getLinks";
 // import { useLinks } from "@/queries/useLinks";
 
 export default function HomeLinks() {
-  const { links, addLink, errors } = useLinkStore((store) => store);
+  const { links, addLink, errors, setLinks } = useLinkStore((store) => store);
   console.log("Links", links);
 
   const hasErrors = Object.values(errors).some((error) => error !== null);
@@ -36,12 +38,12 @@ export default function HomeLinks() {
           Add/edit/remove links below and then share all your profiles with the
           world!
         </p>
-        {/* <Button
+        <Button
           variant="outline"
           className="w-full p-6"
           onClick={() => fetchLinks(setLinks)}>
           Fetch
-        </Button> */}
+        </Button>
         <Button
           variant="outline"
           className="w-full p-6"
@@ -60,8 +62,11 @@ export default function HomeLinks() {
           variant="default"
           disabled={!hasNewLinks || hasErrors || hasEmptyFields}
           onClick={() => {
-            console.log("Ha");
-            addLinkAsync([...links.filter((link) => link.isNew)]);
+            addLinkAsync([
+              ...links
+                .filter((link) => link.isNew)
+                .map(({ ID, Platform, URL }) => ({ ID, Platform, URL })),
+            ]);
           }}>
           Save
         </Button>

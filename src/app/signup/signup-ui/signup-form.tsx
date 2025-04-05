@@ -1,24 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { toast } from "sonner";
-import { Mail, Lock, Eye, EyeOff, Github } from "lucide-react";
+import GoogleIcon from "@/components/icons/google-icon";
+import ErrorText from "@/components/resusables/error-text";
+import Logo from "@/components/resusables/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signupSchema } from "@/lib/validation";
-import ErrorText from "@/components/resusables/error-text";
-import Logo from "@/components/resusables/logo";
-import GoogleIcon from "@/components/icons/google-icon";
-import { AnimatePresence } from "framer-motion";
+import { AuthPayload, useSignup } from "@/queries/auth/signup";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Github, Lock, Mail } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 // Assuming these components exist in your project
 
 export default function SignupForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const signupMutation = useSignup();
 
   // Setup form validation
   const {
@@ -29,30 +31,31 @@ export default function SignupForm() {
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = (data: unknown) => {
+  const onSubmit = (data: AuthPayload & { confirmPassword: string }) => {
     console.log("Signup Data:", data);
-    toast("Account created successfully!");
+
+    signupMutation.mutate({ email: data.email, password: data.password });
   };
 
-  const handleGoogleSignup = async () => {
-    try {
-      // Implement Google signup logic here
-      console.log("Signing up with Google");
-      // Example: await signUpWithGoogle();
-    } catch (error) {
-      toast.error("Failed to sign up with Google");
-    }
-  };
+  // const handleGoogleSignup = async () => {
+  //   try {
+  //     // Implement Google signup logic here
+  //     console.log("Signing up with Google");
+  //     // Example: await signUpWithGoogle();
+  //   } catch (error) {
+  //     toast.error("Failed to sign up with Google");
+  //   }
+  // };
 
-  const handleGithubSignup = async () => {
-    try {
-      // Implement GitHub signup logic here
-      console.log("Signing up with GitHub");
-      // Example: await signUpWithGithub();
-    } catch (error) {
-      toast.error("Failed to sign up with GitHub");
-    }
-  };
+  // const handleGithubSignup = async () => {
+  //   try {
+  //     // Implement GitHub signup logic here
+  //     console.log("Signing up with GitHub");
+  //     // Example: await signUpWithGithub();
+  //   } catch (error) {
+  //     toast.error("Failed to sign up with GitHub");
+  //   }
+  // };
 
   return (
     <div className="w-full max-w-md bg-white p-8 shadow-sm rounded-md">
@@ -75,7 +78,8 @@ export default function SignupForm() {
           type="button"
           variant="outline"
           className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
-          onClick={handleGoogleSignup}>
+          // onClick={handleGoogleSignup}
+        >
           <GoogleIcon />
           Continue with Google
         </Button>
@@ -83,7 +87,8 @@ export default function SignupForm() {
           type="button"
           variant="outline"
           className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
-          onClick={handleGithubSignup}>
+          // onClick={handleGithubSignup}
+        >
           <Github className="w-5 h-5 mr-2" />
           Continue with GitHub
         </Button>

@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/lib/validation";
+import { useLogin } from "@/queries/auth/login";
+import { AuthPayload } from "@/queries/auth/signup";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github, Lock, Mail } from "lucide-react";
 import Link from "next/link";
@@ -18,6 +21,8 @@ import { toast } from "sonner";
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  const loginMutation = useLogin(); // Assuming you have a useLogin hook
+
   // Setup form validation
   const {
     register,
@@ -27,9 +32,9 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: unknown) => {
+  const onSubmit = (data: AuthPayload) => {
     console.log("Login Data:", data);
-    toast.success("Login successful.");
+    loginMutation.mutate({ email: data.email, password: data.password });
   };
 
   const handleGoogleLogin = async () => {
@@ -114,7 +119,7 @@ export default function LoginForm() {
               className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
             />
           </div>
-          {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
+          <ErrorText value={errors.email} />
         </div>
 
         <div className="space-y-2">
@@ -143,7 +148,7 @@ export default function LoginForm() {
             </div>
           </div>
 
-          {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
+          <ErrorText value={errors.password} />
         </div>
 
         <Button

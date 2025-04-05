@@ -10,7 +10,9 @@ export interface User {
 
 interface UserStore {
   user: User;
+  setUser: (user: User) => void;
   updateUser: (updatedData: Partial<User>) => void;
+  clearUser: () => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
@@ -26,5 +28,19 @@ export const useUserStore = create<UserStore>((set) => ({
     set((state) => ({
       user: { ...state.user, ...updatedData },
     }));
+  },
+  setUser: (user: User) => {
+    set({ user });
+  },
+  clearUser: () => {
+    set({
+      user: {
+        id: "",
+        username: "",
+        email: "",
+        bio: "",
+        user_image: "",
+      },
+    });
   },
 }));

@@ -1,4 +1,4 @@
-import { useLinkPreview } from "@/queries/useLinkPreview";
+import { useLinkPreview } from "@/queries/links/useLinkPreview";
 import Image from "next/image";
 import Spinner from "../resusables/spinner";
 import Link from "next/link";

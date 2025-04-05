@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useFetchLinks } from "@/queries/useLinks";
+
 import { useLinkStore } from "@/store/useLinkStore";
 import { useUserStore } from "@/store/useUserStore";
 import { ArrowRight } from "lucide-react";
@@ -13,6 +13,7 @@ import {
   HoverCardTrigger,
 } from "../ui/hover-card";
 import LinkPreview from "./link-preview";
+import { useFetchLinks } from "@/queries/links/getLinks";
 // import { useLinks } from "@/queries/useLinks";
 
 export default function PhonePreview() {
@@ -94,7 +95,7 @@ export default function PhonePreview() {
                   const brand = link.Platform?.toLowerCase() || "default";
                   const hasError = !!errors[link.ID];
                   return (
-                    <HoverCard key={link.ID}>
+                    <HoverCard key={link.renderKey ?? link.ID}>
                       <HoverCardTrigger asChild>
                         <Link
                           href={hasError ? "#" : link.URL} // Prevent navigation if there's an error

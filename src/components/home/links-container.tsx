@@ -1,11 +1,12 @@
-import { useDeleteLink, useUpdateLink } from "@/queries/useLinks";
 import { useLinkStore } from "@/store/useLinkStore";
 import { Equal, Grip, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { PlatformSelect } from "./platform-select";
 import { AnimatePresence, motion } from "framer-motion";
-import { defaulttMotionConfig } from "@/lib/constants";
+import { defaultMotionConfig } from "@/lib/constants";
+import { useDeleteLink } from "@/queries/links/deleteLinks";
+import { useUpdateLink } from "@/queries/links/updateLinks";
 
 export default function LinksContainer() {
   const { links, errors, updateLink, setLinks } = useLinkStore(
@@ -48,7 +49,9 @@ export default function LinksContainer() {
   return (
     <ul className="flex-1 py-10 flex flex-col gap-10">
       {links?.map((link, index) => (
-        <li key={link.ID} className="bg-gray-background p-6 rounded-[6px]">
+        <li
+          key={link.renderKey ?? link.ID}
+          className="bg-gray-background p-6 rounded-[6px]">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1">
               <Equal />
@@ -81,7 +84,7 @@ export default function LinksContainer() {
           <AnimatePresence>
             {linksToDelete.has(link.ID) && !link.isNew && (
               <motion.div
-                {...defaulttMotionConfig}
+                {...defaultMotionConfig}
                 className="mt-4 bg-purple-light text-white rounded-md overflow-hidden">
                 <div className="p-4">
                   <h3 className="text-center font-bold text-gray-dark mb-4">
@@ -109,7 +112,7 @@ export default function LinksContainer() {
             {link.dirty && !errors[link.ID] && (
               <motion.div
                 className="flex justify-end overflow-hidden"
-                {...defaulttMotionConfig}>
+                {...defaultMotionConfig}>
                 <Button className="mt-0" onClick={() => handleUpdate(link.ID)}>
                   Save
                 </Button>

@@ -1,27 +1,24 @@
 "use client";
 
-import { CircleUserRound, Link as IconLink } from "lucide-react";
-import Link from "next/link";
-import Logo from "./logo";
-import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import { useLogout } from "@/queries/auth/logout";
 import { useLinkStore } from "@/store/useLinkStore";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import HamburgerMenu from "./hamburger-menu";
+import { HomeLinksButton } from "./home-links-button";
+import Logo from "./logo";
+import { LogoutButton } from "./logout-button";
+import { PreviewButton } from "./preview-button";
+import { ProfileButton } from "./profile-button";
+import UnsavedModal from "./unsaved-modal";
 
 export default function Navbar() {
-  const currentPath = usePathname();
   const router = useRouter();
   const { links, cleanupEmptyLinks } = useLinkStore((store) => store);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+
+  const logout = useLogout();
 
   const hasUnsavedChanges = links.some(
     (link) => link.isNew || link.Platform === "" || link.URL === ""
@@ -38,14 +35,27 @@ export default function Navbar() {
     }
   };
 
-  // Ignore warning and navigate
-  const handleIgnoreAndNavigate = () => {
-    if (pendingRoute) {
-      router.push(pendingRoute);
-      setIsDialogOpen(false);
-      setPendingRoute(null);
-      cleanupEmptyLinks();
+  // For logout: check for unsaved changes and call logout when confirmed.
+  const handleLogout = (event: React.MouseEvent) => {
+    if (hasUnsavedChanges) {
+      event.preventDefault();
+      setPendingRoute("/logout");
+      setIsDialogOpen(true);
+    } else {
+      logout.mutate();
     }
+  };
+
+  // Called when the user confirms to ignore unsaved changes.
+  const handleIgnoreAndNavigate = () => {
+    if (pendingRoute === "/logout") {
+      logout.mutate();
+    } else if (pendingRoute) {
+      router.push(pendingRoute);
+    }
+    setIsDialogOpen(false);
+    setPendingRoute(null);
+    cleanupEmptyLinks();
   };
 
   return (
@@ -55,64 +65,25 @@ export default function Navbar() {
           <Logo />
         </div>
         <div className="flex-2/3 flex justify-between">
-          <div className="w-full flex items-center gap-4">
-            <Link href="/">
-              <Button
-                variant={currentPath === "/" ? "active" : "ghost"}
-                className="w-40 flex items-center justify-center py-6">
-                <IconLink
-                  className={`h-5 w-5 ${
-                    currentPath === "/" ? "text-purple-primary" : ""
-                  }`}
-                />
-                <span>Links</span>
-              </Button>
-            </Link>
-            {/* Handle Profile Navigation */}
-            <Button
-              variant={currentPath === "/profile" ? "active" : "ghost"}
-              className="w-40 flex items-center justify-center py-6"
-              onClick={(e) => handleNavigation(e, "/profile")}>
-              <CircleUserRound
-                className={`h-5 w-5 ${
-                  currentPath === "/profile" ? "text-purple-primary" : ""
-                }`}
-              />
-              <span>Profile</span>
-            </Button>
+          <div className="w-full hidden lg:flex  items-center gap-4">
+            <HomeLinksButton />
+            <ProfileButton handleNavigation={handleNavigation} />
+            <LogoutButton handleLogout={handleLogout} />
+            <PreviewButton handleNavigation={handleNavigation} />
           </div>
-          <div>
-            {/* Handle Preview Navigation */}
-            <Button
-              variant="outline"
-              className="w-40 flex items-center justify-center py-6"
-              onClick={(e) => handleNavigation(e, "/preview")}>
-              <CircleUserRound className="h-5 text-purple-primary w-5" />
-              <span>Preview</span>
-            </Button>
-          </div>
+        </div>
+
+        <div className="lg:hidden flex">
+          <HamburgerMenu />
         </div>
       </nav>
 
       {/* Dialog for Unsaved Changes */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] text-black">
-          <DialogHeader>
-            <DialogTitle>Unsaved Changes</DialogTitle>
-            <DialogDescription>
-              You have unsaved links. Do you want to stay and save, or continue?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
-              Stay Here
-            </Button>
-            <Button variant="destructive" onClick={handleIgnoreAndNavigate}>
-              Continue Anyway
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UnsavedModal
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+        handleIgnoreAndNavigate={handleIgnoreAndNavigate}
+      />
     </>
   );
 }
