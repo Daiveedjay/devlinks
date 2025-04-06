@@ -1,21 +1,37 @@
 import { Link, useLinkStore } from "@/store/useLinkStore";
-
 import { apiEndpoint } from "@/lib/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 import { toast } from "sonner";
 import { ApiResponse, isErrorResponse } from "../auth/signup";
+import { useAuthStore } from "@/store/useAuthStore";
 
-// Update link function
+// Define a custom error type for API errors.
+export interface ApiError {
+  status: number;
+  message: string;
+}
+
 const updateLink = async (id: number, link: Link): Promise<ApiResponse> => {
   const response = await fetch(`${apiEndpoint}/links/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      authorization: `${localStorage.getItem("auth-token")}`,
     },
+    credentials: "include",
     body: JSON.stringify(link),
   });
+
+  if (response.status === 401) {
+    throw { status: 401, message: "Unauthorized" } as ApiError;
+  }
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw {
+      status: response.status,
+      message: errorData.message || "Error updating link",
+    } as ApiError;
+  }
 
   return response.json();
 };
@@ -23,6 +39,7 @@ const updateLink = async (id: number, link: Link): Promise<ApiResponse> => {
 export const useUpdateLink = (userId: string) => {
   const { links, setLinks } = useLinkStore((store) => store);
   const queryClient = useQueryClient();
+  const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 
   return useMutation({
     mutationFn: (data: { id: number; link: Link }) =>
@@ -32,7 +49,7 @@ export const useUpdateLink = (userId: string) => {
       await queryClient.cancelQueries({ queryKey: ["links", userId] });
       const previousLinks = links;
 
-      // Optimistically modify the links
+      // Optimistically update the link.
       const optimisticLinks = previousLinks.map((link) =>
         link.ID === data.id ? { ...link, ...data.link } : link
       );
@@ -40,31 +57,31 @@ export const useUpdateLink = (userId: string) => {
       return { previousLinks };
     },
 
-    onError: (_, __, context) => {
+    onError: (error: unknown, __, context) => {
+      // Check if error is our custom ApiError and handle 401.
+      if (typeof error === "object" && error !== null && "status" in error) {
+        const err = error as ApiError;
+        if (err.status === 401) {
+          setIsUnauthorized(true);
+        }
+      }
+      // Rollback the optimistic update.
       if (context?.previousLinks) {
         setLinks(context.previousLinks);
       }
-
-      // Show an error toast if mutation fails
       toast.error("Failed to update the link. Please try again.");
     },
 
     onSuccess: (apiResponse, _, context) => {
       if (isErrorResponse(apiResponse)) {
-        // If there's an error in the response, show a toast with the error message
         toast.error(
           apiResponse.error || "An error occurred while updating the link."
         );
-
-        // Revert the optimistic update if there was an error
         if (context?.previousLinks) {
           setLinks(context.previousLinks);
         }
-
-        return; // Early return to prevent further processing if there's an error
+        return;
       }
-
-      // Show a success toast if the link is successfully updated
       toast.success("Link updated successfully!");
     },
   });

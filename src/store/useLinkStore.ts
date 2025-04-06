@@ -31,6 +31,8 @@ interface LinkStore {
   markLinkAsSaved: (id: number) => void;
 
   cleanupEmptyLinks: () => void;
+
+  clearLinksStore: () => void;
 }
 
 export const useLinkStore = create<LinkStore>((set) => ({
@@ -148,4 +150,5 @@ export const useLinkStore = create<LinkStore>((set) => ({
       ),
     }));
   },
+  clearLinksStore: () => set(() => ({ links: [], errors: {} })),
 }));

@@ -1,4 +1,6 @@
 import { apiEndpoint } from "@/lib/constants";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useLinkStore } from "@/store/useLinkStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -25,14 +27,20 @@ const logout = async () => {
 export const useLogout = () => {
   const router = useRouter();
   const clearUser = useUserStore((state) => state.clearUser);
+  const clearLinksStore = useLinkStore((store) => store.clearLinksStore);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
 
   return useMutation({
-    mutationFn: () => logout(), // Use the extracted logout function
+    mutationFn: () => logout(),
     onSuccess: () => {
+      router.push("/login");
+
       toast.success("Logout successful!");
       clearUser();
+      clearLinksStore();
+      clearAuth();
       // setUser(null); // Clear the user state
-      router.push("/login"); // Redirect to the login page
+      // Redirect to the login page
     },
     onError: (error) => {
       toast.error(error.message || "Logout failed");

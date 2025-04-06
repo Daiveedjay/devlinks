@@ -14,7 +14,7 @@ import UnsavedModal from "./unsaved-modal";
 
 export default function Navbar() {
   const router = useRouter();
-  const { links, cleanupEmptyLinks } = useLinkStore((store) => store);
+  const { links } = useLinkStore((store) => store);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
 
@@ -55,7 +55,6 @@ export default function Navbar() {
     }
     setIsDialogOpen(false);
     setPendingRoute(null);
-    cleanupEmptyLinks();
   };
 
   return (
