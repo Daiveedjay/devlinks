@@ -43,10 +43,14 @@ export const useLinkStore = create<LinkStore>((set) => ({
 
   addLink: () =>
     set((state) => {
-      const newId =
-        state.links.length > 0
-          ? Math.max(...state.links.map((link) => link.ID)) + 1
-          : 1;
+      const generateRandomId = () => Math.floor(Math.random() * 1000000) + 1;
+
+      // Keep generating until we find a unique ID
+      let newId = generateRandomId();
+      while (state.links.some((link) => link.ID === newId)) {
+        newId = generateRandomId();
+      }
+
       const newLink: Link = {
         ID: newId,
         Platform: "",

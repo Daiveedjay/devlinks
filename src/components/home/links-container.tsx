@@ -1,12 +1,12 @@
+import { defaultMotionConfig } from "@/lib/constants";
+import { useDeleteLink } from "@/queries/links/deleteLinks";
+import { useUpdateLink } from "@/queries/links/updateLinks";
 import { useLinkStore } from "@/store/useLinkStore";
+import { AnimatePresence, motion } from "framer-motion";
 import { Equal, Grip, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { PlatformSelect } from "./platform-select";
-import { AnimatePresence, motion } from "framer-motion";
-import { defaultMotionConfig } from "@/lib/constants";
-import { useDeleteLink } from "@/queries/links/deleteLinks";
-import { useUpdateLink } from "@/queries/links/updateLinks";
 
 export default function LinksContainer() {
   const { links, errors, updateLink, setLinks } = useLinkStore(
@@ -27,9 +27,9 @@ export default function LinksContainer() {
     });
   };
 
-  const { mutate: deleteLinkAsync } = useDeleteLink("1");
+  const { mutate: deleteLinkAsync } = useDeleteLink();
   // const { addLink: addLinkAsync, fetchLinksAPI } = useLinks();
-  const { mutate: updateLinkAsync } = useUpdateLink("1");
+  const { mutate: updateLinkAsync } = useUpdateLink();
 
   const handleDelete = (isNew: boolean, id: number) => {
     if (isNew) {

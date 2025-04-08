@@ -3,6 +3,7 @@
 import GoogleIcon from "@/components/icons/google-icon";
 import ErrorText from "@/components/resusables/error-text";
 import Logo from "@/components/resusables/logo";
+import Spinner from "@/components/resusables/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +22,7 @@ import { toast } from "sonner";
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const loginMutation = useLogin(); // Assuming you have a useLogin hook
+  const { mutate: login, isPending } = useLogin();
 
   // Setup form validation
   const {
@@ -34,7 +35,7 @@ export default function LoginForm() {
 
   const onSubmit = (data: AuthPayload) => {
     console.log("Login Data:", data);
-    loginMutation.mutate({ email: data.email, password: data.password });
+    login({ email: data.email, password: data.password });
   };
 
   const handleGoogleLogin = async () => {
@@ -152,9 +153,11 @@ export default function LoginForm() {
         </div>
 
         <Button
-          type="submit"
+          // type="submit"
+          disabled={!!errors.email || !!errors.password || isPending}
+          onClick={handleSubmit(onSubmit)}
           className="w-full bg-purple-primary hover:bg-purple-primary/90 text-white">
-          Login
+          {isPending ? <Spinner /> : "Login"}
         </Button>
       </form>
 

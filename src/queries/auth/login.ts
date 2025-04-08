@@ -18,8 +18,7 @@ const login = async (payload: AuthPayload): Promise<AuthResponse> => {
 
   if (!response.ok) {
     const errorData = await response.json();
-    const message = errorData?.message || "Login failed";
-    throw new Error(message); // Throw an error if the response is not ok
+    throw new Error(errorData.error); // Throw an error if the response is not ok
   }
 
   return response.json();
@@ -35,7 +34,7 @@ export const useLogin = () => {
     },
     onError: (error) => {
       // Show the error message from the error thrown in the signup function
-      toast.error(error.message || "Signup failed");
+      toast.error(error.message);
     },
 
     onSuccess: (data) => {
@@ -44,7 +43,7 @@ export const useLogin = () => {
         toast.error(data.error);
         return;
       }
-      toast("Account created successfully!");
+      toast("Login successful!");
       // localStorage.setItem("auth-token", data.token);
       setUser(data.user);
       router.push("/");

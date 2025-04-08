@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiEndpoint } from "@/lib/constants";
 import { ApiResponse } from "../auth/signup";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useUserStore } from "@/store/useUserStore";
 
 export const fetchLinks = async (
   setLinks: (links: Link[]) => void
@@ -32,7 +33,10 @@ export const fetchLinks = async (
   return data;
 };
 
-export const useFetchLinks = (userId: string) => {
+export const useFetchLinks = () => {
+  const user = useUserStore((store) => store.user);
+  const userId = user?.id;
+
   const setLinks = useLinkStore((store) => store.setLinks);
   const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 
@@ -48,7 +52,7 @@ export const useFetchLinks = (userId: string) => {
         return false;
       }
       // Retry other errors (optional, customize as needed)
-      return failureCount < 0;
+      return failureCount < 3;
     },
   });
 };

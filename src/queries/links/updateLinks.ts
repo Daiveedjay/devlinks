@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ApiResponse, isErrorResponse } from "../auth/signup";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useUserStore } from "@/store/useUserStore";
 
 // Define a custom error type for API errors.
 export interface ApiError {
@@ -36,8 +37,10 @@ const updateLink = async (id: number, link: Link): Promise<ApiResponse> => {
   return response.json();
 };
 
-export const useUpdateLink = (userId: string) => {
+export const useUpdateLink = () => {
   const { links, setLinks } = useLinkStore((store) => store);
+  const user = useUserStore((store) => store.user);
+    const userId = user?.id;
   const queryClient = useQueryClient();
   const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 

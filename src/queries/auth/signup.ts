@@ -47,6 +47,7 @@ const signup = async (payload: AuthPayload): Promise<AuthResponse> => {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(payload),
   });
 

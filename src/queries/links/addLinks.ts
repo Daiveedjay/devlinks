@@ -1,9 +1,9 @@
-import { Link, useLinkStore } from "@/store/useLinkStore";
 import { apiEndpoint } from "@/lib/constants";
+import { Link, useLinkStore } from "@/store/useLinkStore";
+import { useUserStore } from "@/store/useUserStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ApiResponse, isErrorResponse } from "../auth/signup";
-import { useAuthStore } from "@/store/useAuthStore";
 
 // Optionally define a custom error type for clarity.
 export interface ApiError {
@@ -42,35 +42,31 @@ const addLinks = async (newLinks: Link | Link[]): Promise<ApiResponse> => {
   return response.json();
 };
 
-export const useAddLink = (userId: string) => {
+export const useAddLink = () => {
   const { setLinks, links, markLinkAsSaved } = useLinkStore((store) => store);
+  const user = useUserStore((store) => store.user);
+  const userId = user?.id;
   const queryClient = useQueryClient();
-  const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 
   return useMutation({
     mutationFn: (newLinks: Link | Link[]) => addLinks(newLinks),
 
     onMutate: async (newLinks) => {
+      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["links", userId] });
+
       const previousLinks = links;
       const linksToAdd = Array.isArray(newLinks) ? newLinks : [newLinks];
-      setLinks([...previousLinks, ...linksToAdd]);
-      return { previousLinks };
-    },
 
-    onError: (error: unknown, __, context) => {
-      // Check if error is our custom ApiError with a 401 status.
-      if (typeof error === "object" && error !== null && "status" in error) {
-        const err = error as ApiError;
-        if (err.status === 401) {
-          setIsUnauthorized(true);
-        }
-      }
-      // Rollback to the previous state if available.
-      if (context?.previousLinks) {
-        setLinks(context.previousLinks);
-      }
-      toast.error("An error occurred while adding the link. Please try again.");
+      // Filter out any existing links with the same temporary IDs
+      const existingLinks = links.filter(
+        (link) => !linksToAdd.some((newLink) => newLink.ID === link.ID)
+      );
+
+      // Combine existing links with new ones
+      setLinks([...existingLinks, ...linksToAdd]);
+
+      return { previousLinks };
     },
 
     onSuccess: (apiResponse, newLinks, context) => {
@@ -81,12 +77,19 @@ export const useAddLink = (userId: string) => {
         }
         return;
       }
+
       const linksToReplace = Array.isArray(newLinks) ? newLinks : [newLinks];
-      const idsToReplace = new Set(linksToReplace.map((link) => link.ID));
-      const filtered = links.filter((link) => !idsToReplace.has(link.ID));
-      const newLinksFromApi = apiResponse.data;
-      setLinks([...filtered, ...newLinksFromApi]);
-      newLinksFromApi.forEach((link) => {
+
+      // Keep only links that weren't part of this update
+      const existingLinks = links.filter(
+        (link) => !linksToReplace.some((newLink) => newLink.ID === link.ID)
+      );
+
+      // Add the new links from the API response
+      setLinks([...existingLinks, ...apiResponse.data]);
+
+      // Mark new links as saved
+      apiResponse.data.forEach((link) => {
         markLinkAsSaved(link.ID);
       });
     },

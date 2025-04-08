@@ -3,6 +3,7 @@
 import GoogleIcon from "@/components/icons/google-icon";
 import ErrorText from "@/components/resusables/error-text";
 import Logo from "@/components/resusables/logo";
+import Spinner from "@/components/resusables/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +21,7 @@ import { useForm } from "react-hook-form";
 export default function SignupForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const signupMutation = useSignup();
+  const { mutate: signup, isPending } = useSignup();
 
   // Setup form validation
   const {
@@ -34,7 +35,7 @@ export default function SignupForm() {
   const onSubmit = (data: AuthPayload & { confirmPassword: string }) => {
     console.log("Signup Data:", data);
 
-    signupMutation.mutate({ email: data.email, password: data.password });
+    signup({ email: data.email, password: data.password });
   };
 
   // const handleGoogleSignup = async () => {
@@ -187,9 +188,16 @@ export default function SignupForm() {
         </div>
 
         <Button
-          type="submit"
+          // type="submit"
+          disabled={
+            !!errors.email ||
+            !!errors.password ||
+            !!errors.confirmPassword ||
+            isPending
+          }
+          onClick={handleSubmit(onSubmit)}
           className="w-full bg-purple-primary hover:bg-purple-primary/90 text-white">
-          Create new account
+          {isPending ? <Spinner /> : "   Create new account"}
         </Button>
       </form>
 

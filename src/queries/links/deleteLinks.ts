@@ -3,6 +3,7 @@ import { useLinkStore } from "@/store/useLinkStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useUserStore } from "@/store/useUserStore";
 
 export type DeleteLinkResponse =
   | { message: string; error?: undefined }
@@ -38,8 +39,10 @@ const deleteLink = async (id: number): Promise<DeleteLinkResponse> => {
   return response.json();
 };
 
-export const useDeleteLink = (userId: string) => {
+export const useDeleteLink = () => {
   const { links, setLinks } = useLinkStore((store) => store);
+  const user = useUserStore((store) => store.user);
+  const userId = user?.id;
   const queryClient = useQueryClient();
   const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 

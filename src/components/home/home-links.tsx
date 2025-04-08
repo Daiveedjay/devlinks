@@ -8,14 +8,18 @@ import { useLinkStore } from "@/store/useLinkStore";
 import LinksContainer from "./links-container";
 import NoLinks from "./no-links";
 import { useAddLink } from "@/queries/links/addLinks";
-import { fetchLinks } from "@/queries/links/getLinks";
+import { fetchLinks, useFetchLinks } from "@/queries/links/getLinks";
 // import { useLinks } from "@/queries/useLinks";
 
 export default function HomeLinks() {
   const { links, addLink, errors, setLinks } = useLinkStore((store) => store);
   console.log("Links", links);
 
+  const { data } = useFetchLinks();
+  console.log("Fetched Links from homelinks comp", data);
+
   const hasErrors = Object.values(errors).some((error) => error !== null);
+
   const hasEmptyFields = links.some(
     (link) =>
       !link.Platform ||
@@ -28,7 +32,7 @@ export default function HomeLinks() {
   const hasNewLinks = links.some((link) => link.isNew);
 
   // const { addLink: addLinkAsync, fetchLinksAPI } = useLinks();
-  const { mutate: addLinkAsync } = useAddLink("1");
+  const { mutate: addLinkAsync } = useAddLink();
 
   return (
     <div className="flex flex-col">
