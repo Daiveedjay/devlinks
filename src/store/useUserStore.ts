@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface User {
   id: string;
@@ -15,25 +16,9 @@ interface UserStore {
   clearUser: () => void;
 }
 
-export const useUserStore = create<UserStore>((set) => ({
-  user: {
-    id: "",
-    username: "",
-    email: "",
-    bio: "",
-    user_image: "",
-  },
-
-  updateUser: (updatedData: Partial<User>) => {
-    set((state) => ({
-      user: { ...state.user, ...updatedData },
-    }));
-  },
-  setUser: (user: User) => {
-    set({ user });
-  },
-  clearUser: () => {
-    set({
+export const useUserStore = create<UserStore>()(
+  persist(
+    (set) => ({
       user: {
         id: "",
         username: "",
@@ -41,6 +26,31 @@ export const useUserStore = create<UserStore>((set) => ({
         bio: "",
         user_image: "",
       },
-    });
-  },
-}));
+
+      updateUser: (updatedData: Partial<User>) => {
+        set((state) => ({
+          user: { ...state.user, ...updatedData },
+        }));
+      },
+      setUser: (user: User) => {
+        set({ user });
+      },
+      clearUser: () => {
+        set({
+          user: {
+            id: "",
+            username: "",
+            email: "",
+            bio: "",
+            user_image: "",
+          },
+        });
+      },
+    }),
+    {
+      name: "user-storage", // unique name for localStorage key
+      // storage: createJSONStorage(() => localStorage), // (optional) by default, localStorage is used
+      // partialize: (state) => ({ user: state.user }), // (optional) choose which part of the state to persist
+    }
+  )
+);

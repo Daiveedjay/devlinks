@@ -61,7 +61,7 @@ export default function HamburgerMenu() {
     cleanupEmptyLinks();
   };
 
-  useClickOutside(menuRef, () => setActive(false));
+  useClickOutside(buttonRef, () => setActive(false));
 
   return (
     <>

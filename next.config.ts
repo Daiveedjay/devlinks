@@ -2,7 +2,6 @@ import { platforms } from "@/lib/constants";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
     remotePatterns: platforms
       .filter(
@@ -14,6 +13,14 @@ const nextConfig: NextConfig = {
         hostname: platform.domainAvatar,
         pathname: "**",
       })),
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/@:username",
+        destination: "/users/profile/:username",
+      },
+    ];
   },
 };
 

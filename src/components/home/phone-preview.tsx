@@ -25,14 +25,12 @@ export default function PhonePreview() {
   );
 
   // Add useLinks hook to get the data
-  const { isLoading } = useFetchLinks("1");
+  const { isPending } = useFetchLinks();
 
   console.log("Preview Links", links);
 
-  // Check if there's an error for this link
-
   return (
-    <div className="relative preview__component w-[280px]  h-[575px]">
+    <div className="relative preview__component  w-[280px]  h-[575px]">
       {" "}
       {/* Adjusted to 280x575 */}
       {/* Phone Frame SVG */}
@@ -67,7 +65,7 @@ export default function PhonePreview() {
               height={88}
               className={cn(
                 "w-full h-full object-cover duration-700 ease-in-out",
-                isLoading
+                isPending
                   ? "scale-110 blur-2xl grayscale"
                   : "scale-100 blur-0 grayscale-0"
               )}
@@ -77,13 +75,11 @@ export default function PhonePreview() {
 
           {/* Profile Name */}
           <h1 className="text-base font-bold text-gray-dark mb-[4px]">
-            @{username || "Baby boy"}
+            @{username || "Anon user"}
           </h1>
 
           {/* Profile Email */}
-          <p className="text-[14px] text-gray-medium mb-[8px]">
-            {email || "email@example.com"}
-          </p>
+          <p className="text-[14px] text-gray-medium mb-[8px]">{email}</p>
           <p className="text-[14px] text-gray-medium mb-[24px]">
             {bio || " An amazing bio goes here"}
           </p>

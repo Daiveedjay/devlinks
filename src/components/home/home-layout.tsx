@@ -12,7 +12,7 @@ export default function HomeLayout({
       <Navbar />
       <div className="bg-gray-background overflow-y-auto flex-1 gap-4 flex">
         {/* Left Side: Phone Preview */}
-        <div className="flex-1/3 bg-white flex justify-center items-center">
+        <div className="flex-1/3 bg-white  justify-center items-center hidden md:flex">
           <PhonePreview />
         </div>
 

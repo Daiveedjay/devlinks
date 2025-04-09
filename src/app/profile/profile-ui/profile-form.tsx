@@ -1,11 +1,13 @@
 "use client";
 
 import ErrorText from "@/components/resusables/error-text";
+import Spinner from "@/components/resusables/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { profileSchema } from "@/lib/validation";
+import { useUpdateUser } from "@/queries/user/user";
 import { User, useUserStore } from "@/store/useUserStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
@@ -29,11 +31,14 @@ export default function ProfileForm() {
     },
   });
 
-  const updateUser = useUserStore((store) => store.updateUser);
+  const user = useUserStore((store) => store.user);
+
+  const { mutate: updateUserAsync, isPending } = useUpdateUser();
 
   const onSubmit = (data: Partial<User>) => {
     console.log(data);
-    updateUser({ username: data.username, bio: data.bio });
+
+    updateUserAsync({ username: data.username, bio: data.bio });
   };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +51,18 @@ export default function ProfileForm() {
     setValue("username", value, { shouldValidate: true });
   };
 
-  const bio = watch("bio", ""); // Ensure we track the latest bio value
+  // const bio = watch("bio", user.bio); // Ensure we track the latest bio value
+
+  // Watch both fields for changes
+  const watchedUsername = watch("username", user.username);
+  const watchedBio = watch("bio", user.bio);
+
+  // Check if there are any changes
+  const hasChanges = React.useMemo(() => {
+    const usernameChanged = watchedUsername !== user.username;
+    const bioChanged = watchedBio !== user.bio;
+    return usernameChanged || bioChanged;
+  }, [watchedUsername, watchedBio, user.username, user.bio]);
 
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -73,7 +89,8 @@ export default function ProfileForm() {
           <Input
             {...register("username")}
             id="username"
-            placeholder="Ben"
+            placeholder={user.username}
+            defaultValue={user.username}
             className={`border placeholder:font-normal  font-semibold flex-2/3 ${
               focusedField === "username"
                 ? "focus:border-purple-primary focus:ring-purple-primary ring-1"
@@ -84,12 +101,7 @@ export default function ProfileForm() {
             onChange={handleUsernameChange}
             autoFocus
           />
-          {errors.username && (
-            <div className=" absolute top-1/2 -translate-y-2/3 right-2">
-              {" "}
-              <ErrorText>{errors.username.message}</ErrorText>
-            </div>
-          )}
+          <ErrorText value={errors.username} />
         </div>
       </div>
 
@@ -101,7 +113,7 @@ export default function ProfileForm() {
           <Textarea
             {...register("bio")}
             id="bio"
-            defaultValue={bio}
+            defaultValue={watchedBio}
             onChange={handleBioChange}
             className={`border resize-none placeholder:font-normal  font-semibold flex-2/3 ${
               focusedField === "bio"
@@ -111,18 +123,13 @@ export default function ProfileForm() {
             onFocus={() => setFocusedField("bio")}
             onBlur={() => setFocusedField(null)}
           />{" "}
-          {errors.bio && (
-            <div className=" absolute top-1/2 -translate-y-2/3 right-2">
-              {" "}
-              <ErrorText>{errors.bio.message}</ErrorText>
-            </div>
-          )}
+          <ErrorText value={errors.bio} />
         </div>
         <div
           className={`absolute -top-1 -translate-y-full right-0  text-sm ${
-            bio.length >= 200 ? "text-red-error font-medium" : ""
+            watchedBio.length >= 200 ? "text-red-error font-medium" : ""
           }`}>
-          {bio.length} / 200
+          {watchedBio.length} / 200
         </div>
       </div>
 
@@ -138,7 +145,7 @@ export default function ProfileForm() {
             id="email"
             type="email"
             disabled
-            value="ben@example.com"
+            value={user.email}
             className={`border flex-2/3 ${
               focusedField === "email"
                 ? "focus:border-purple-primary focus:ring-purple-primary ring-1"
@@ -152,8 +159,10 @@ export default function ProfileForm() {
         <Button
           className="px-8 py-6"
           variant="default"
-          disabled={Object.keys(errors).length > 0}>
-          Save
+          disabled={
+            Object.keys(errors).length > 0 || isPending || !hasChanges // Add this condition
+          }>
+          {isPending ? <Spinner /> : "Save"}
         </Button>
       </div>
     </form>
