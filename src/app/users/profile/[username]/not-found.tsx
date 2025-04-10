@@ -8,8 +8,9 @@ export default function NotFound() {
           User Not Found
         </h2>
         <p className="text-gray-medium mb-6">
-          We couldn&apos;t find the user profile you&apos;re looking for. The
-          user may not exist or the profile might have been removed.
+          We couldn&apos;t find the user profile you&apos;re looking for. This
+          could mean the profile has been removed or the username has been
+          changed. Please verify the username or try again later.
         </p>
         <div className="flex justify-center">
           <Link

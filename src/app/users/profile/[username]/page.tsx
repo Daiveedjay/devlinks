@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Link as LinkType } from "@/store/useLinkStore";
+import NotFound from "./not-found";
 
 export type UserProfileResponse = {
   id: number;
@@ -35,6 +36,8 @@ export default async function Page({
 
   if (!response.ok) {
     console.log(response, "response in profile page");
+
+    return <NotFound />;
     // throw new Error("Failed to fetch user profile data");
   }
 

@@ -3,16 +3,25 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: platforms
-      .filter(
-        (platform): platform is typeof platform & { domainAvatar: string } =>
-          platform.domainAvatar !== undefined
-      )
-      .map((platform) => ({
+    remotePatterns: [
+      // Keep existing platform patterns
+      ...platforms
+        .filter(
+          (platform): platform is typeof platform & { domainAvatar: string } =>
+            platform.domainAvatar !== undefined
+        )
+        .map((platform) => ({
+          protocol: "https" as const,
+          hostname: platform.domainAvatar,
+          pathname: "**",
+        })),
+      // Add Cloudinary domain
+      {
         protocol: "https",
-        hostname: platform.domainAvatar,
-        pathname: "**",
-      })),
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+    ],
   },
   async rewrites() {
     return [

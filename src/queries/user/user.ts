@@ -77,3 +77,33 @@ export const useUpdateUser = () => {
     },
   });
 };
+
+export const updateUserImage = async (file: File) => {
+  const formData = new FormData();
+  // Append the file with the key "file" (this must match what your backend expects)
+  formData.append("file", file);
+
+  const response = await fetch(`${apiEndpoint}/avatar`, {
+    method: "POST",
+    credentials: "include", // Ensures cookies are sent with the request
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to update image");
+  }
+
+  return {
+    status: response.status,
+    url: data.url,
+    message: data.message,
+  };
+};
+
+export const useUpdateUserImage = () => {
+  return useMutation({
+    mutationFn: (file: File) => updateUserImage(file),
+  });
+};

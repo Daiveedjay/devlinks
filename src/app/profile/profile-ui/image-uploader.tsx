@@ -1,145 +1,126 @@
 "use client";
 
-import type React from "react";
-
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ImageIcon } from "lucide-react";
-import Image, { StaticImageData } from "next/image";
+import Spinner from "@/components/resusables/spinner";
+import { Button } from "@/components/ui/button";
+import { useUpdateUserImage } from "@/queries/user/user";
 import { useUserStore } from "@/store/useUserStore";
+import Image from "next/image";
+import { useState } from "react";
 import { toast } from "sonner";
+import { ImageUploadOverlay } from "./image-upload-overlay";
+import { ImagePreview } from "./image-preview";
 
-export function ImageUploader() {
-  const { updateUser, user } = useUserStore((store) => store);
-  const [image, setImage] = useState<string | StaticImageData>(
+export default function ProfileImageUploader() {
+  const { user, updateUser } = useUserStore((store) => store);
+  const [originalImage, setOriginalImage] = useState(
     user.user_image || "/placeholder.jpg"
   );
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewImage, setPreviewImage] = useState(
+    user.user_image || "/placeholder.jpg"
+  );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [unsavedChange, setUnsavedChange] = useState(false);
 
-  const handleUploadStart = () => {
-    setIsUploading(true);
-    setUploadProgress(0);
+  const { mutate: updateImage, isPending: isSaving } = useUpdateUserImage();
 
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
-
-    // Simulate upload completion
-    setTimeout(() => {
-      setIsUploading(false);
-      clearInterval(interval);
-    }, 2000);
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file size (5MB = 5 * 1024 * 1024 bytes)
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-    if (file.size > maxSize) {
+    if (file.size > 5 * 1024 * 1024) {
       toast.error("Image must be less than 5MB");
-      e.target.value = ""; // Reset input
+      e.target.value = "";
       return;
     }
 
-    handleUploadStart();
+    setIsProcessing(true);
+    setUnsavedChange(true);
+    setSelectedFile(file);
 
-    try {
-      // Create a local preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (result) {
-          // After "upload" completes, set the image
-          setTimeout(() => {
-            setImage(result);
-            updateUser({ user_image: result });
-          }, 2000);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setPreviewImage(result);
+        setIsProcessing(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSave = () => {
+    if (!selectedFile) return;
+
+    updateImage(selectedFile, {
+      onSuccess: (response) => {
+        console.log("Image response", response);
+        if (!response.url) {
+          toast.error(
+            "Image update failed. The server did not return a valid URL. Please try again or contact support."
+          );
+          setPreviewImage(originalImage);
+          setUnsavedChange(false);
+          return;
         }
-      };
-      reader.readAsDataURL(file);
 
-      console.log("Uploading image:", file);
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      setIsUploading(false);
-    }
-  };
+        toast.success("Image updated successfully!");
+        setOriginalImage(previewImage);
 
-  const handleButtonClick = () => {
-    fileInputRef.current?.click();
+        updateUser({ user_image: response.url });
+        setUnsavedChange(false);
+        setSelectedFile(null);
+      },
+      onError: (error: any) => {
+        toast.error(error.message);
+        setPreviewImage(originalImage);
+        setUnsavedChange(false);
+      },
+    });
   };
 
   return (
-    <div className="relative w-full aspect-square max-w-[240px]  rounded-md overflow-hidden">
-      <Image
-        src={image}
-        sizes="100%"
-        fill
-        className=" object-cover"
-        alt="Avatar"
-      />
+    <div className="bg-gray-background mt-16 mb-8 p-8 rounded-[12px]">
+      <div className="flex flex-col lg:flex-row items-start gap-4 lg:gap-0 lg:items-center">
+        <p className="medium__text flex-1/3">Profile Picture</p>
+        <div className="flex-1 lg:flex-2/3 gap-14 flex flex-col lg:flex-row items-start lg:items-center lg:gap-4">
+          <div className="relative aspect-square w-full lg:max-w-[240px] border-2 rounded-lg">
+            {!selectedFile ? (
+              <>
+                <Image
+                  src={originalImage}
+                  fill
+                  sizes="100%"
+                  alt="Avatar"
+                  className="object-cover rounded-lg"
+                />
+                <ImageUploadOverlay onFileChange={handleFileChange} />
+              </>
+            ) : (
+              <ImagePreview
+                previewImage={previewImage}
+                onRemove={() => {
+                  setSelectedFile(null);
+                  setUnsavedChange(false);
+                }}
+                onFileChange={handleFileChange}
+              />
+            )}
+          </div>
+          <p className="lg:p-8 small__text">
+            Image must be below 5MB. Preferably use PNG or JPG format.
+          </p>
+        </div>
+      </div>
 
-      {/* Overlay */}
-      <motion.div
-        className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center cursor-pointer"
-        whileHover={{ opacity: 0.8 }}
-        onClick={handleButtonClick}>
-        <ImageIcon className="w-10 h-10 text-white mb-2" />
-        <span className="text-white font-medium">Change Image</span>
-
-        {/* Hidden file input */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
-          accept="image/*"
-        />
-      </motion.div>
-
-      {/* Upload Progress Overlay */}
-      <AnimatePresence>
-        {isUploading && (
-          <motion.div
-            className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}>
-            <div className="w-4/5 mb-4">
-              <ProgressBar progress={uploadProgress} />
-            </div>
-            <span className="text-white text-sm">Uploading...</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-interface ProgressBarProps {
-  progress: number;
-}
-
-function ProgressBar({ progress }: ProgressBarProps) {
-  return (
-    <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
-      <motion.div
-        className="h-full bg-white"
-        initial={{ width: 0 }}
-        animate={{ width: `${progress}%` }}
-        transition={{ ease: "easeInOut" }}
-      />
+      {unsavedChange && (
+        <Button
+          className="mt-10"
+          onClick={handleSave}
+          disabled={isProcessing || isSaving}>
+          {isSaving && <Spinner />} Save Image
+        </Button>
+      )}
     </div>
   );
 }
