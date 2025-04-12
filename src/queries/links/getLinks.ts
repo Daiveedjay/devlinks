@@ -1,14 +1,13 @@
-import { Link, useLinkStore } from "@/store/useLinkStore";
+import { apiEndpoint } from "@/lib/constants";
+import { Link } from "@/store/useLinkStore";
 
 import { useQuery } from "@tanstack/react-query";
-import { apiEndpoint } from "@/lib/constants";
-import { ApiResponse } from "../auth/signup";
+import { useLinkStore } from "@/store/useLinkStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
+import { ApiError, ApiResponse } from "../auth/types/types";
 
-export const fetchLinks = async (
-  setLinks: (links: Link[]) => void
-): Promise<ApiResponse> => {
+export const fetchLinks = async (): Promise<Link[]> => {
   const response = await fetch(`${apiEndpoint}/links`, {
     method: "GET",
     headers: {
@@ -17,41 +16,37 @@ export const fetchLinks = async (
     credentials: "include",
   });
 
-  // If the status is 401, throw an error.
-  if (response.status === 401) {
-    throw new Error("Unauthorized");
+  const data: ApiResponse<Link[]> = await response.json();
+
+  if (!response.ok || data.error) {
+    throw {
+      status: response.status,
+      message: data.message || "Error fetching links",
+    } as ApiError;
   }
 
-  // For other non-OK responses, you might also want to handle them:
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Error fetching links");
-  }
-
-  const data = await response.json();
-  setLinks(data.data ?? []);
-  return data;
+  return data.data ?? [];
 };
 
 export const useFetchLinks = () => {
   const user = useUserStore((store) => store.user);
   const userId = user?.id;
-
   const setLinks = useLinkStore((store) => store.setLinks);
   const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 
   return useQuery({
     queryKey: ["links", userId],
-    queryFn: () => fetchLinks(setLinks),
+    queryFn: async () => {
+      const links = await fetchLinks();
+      setLinks(links);
+      return links;
+    },
     enabled: !!userId,
-    retry: (failureCount, error: Error) => {
-      // Don't retry on 401 Unauthorized errors
-      if (error.message === "Unauthorized") {
-        console.log("Unauthorized error, not retrying:", error);
+    retry: (failureCount, error: ApiError) => {
+      if (error.status === 401) {
         setIsUnauthorized(true);
         return false;
       }
-      // Retry other errors (optional, customize as needed)
       return failureCount < 3;
     },
   });

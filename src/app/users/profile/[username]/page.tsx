@@ -1,10 +1,9 @@
 import { apiEndpoint } from "@/lib/constants";
-import { ArrowRight } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 
+import PreviewTemplate from "@/components/resusables/preview-template";
 import { Link as LinkType } from "@/store/useLinkStore";
 import NotFound from "./not-found";
+import { Metadata } from "next";
 
 export type UserProfileResponse = {
   id: number;
@@ -38,7 +37,6 @@ export default async function Page({
     console.log(response, "response in profile page");
 
     return <NotFound />;
-    // throw new Error("Failed to fetch user profile data");
   }
 
   const data = await response.json();
@@ -46,49 +44,61 @@ export default async function Page({
   const userData: UserProfileResponse = data.data;
   console.log(data, "data in profile page");
 
-  const { bio, user_image, email, links } = userData;
+  return <PreviewTemplate user={{ ...userData, id: userData.id.toString() }} />;
+}
 
-  return (
-    <div className=" bg-gray-background">
-      <div className=" p-8 rounded-b-3xl bg-purple-primary h-[50dvh]"></div>
-      <div className=" flex justify-center">
-        <div className="w-[350px] rounded-3xl -translate-y-40 overflow-y-auto max-h-[560px] bg-white shadow-sm flex flex-col p-8 items-center">
-          <div className=" relative w-28 rounded-full min-h-28 outline-4 outline-purple-primary overflow-hidden">
-            <Image
-              src={user_image === "" ? "/placeholder.jpg" : user_image}
-              fill
-              className=" object-cover"
-              alt="Placeholder"
-            />
-          </div>
-          <div>
-            <h3 className="medium__header mt-6"> @{username}</h3>
+// ...existing UserProfileResponse type..
+// Add metadata generation function
+export async function generateMetadata({
+  params,
+}: {
+  params: { username: string };
+}): Promise<Metadata> {
+  const resolvedParams = await Promise.resolve(params);
+  const { username } = resolvedParams;
 
-            <p className="text-[14px] text-gray-medium  mb-[8px]">{email}</p>
-            <p className="text-[14px] text-gray-medium mb-[24px]">{bio}</p>
-          </div>
-          <ul className=" mt-6 w-full text-white flex flex-col gap-4">
-            {links?.map((link) => {
-              const brand = link.Platform?.toLowerCase() || "default";
-              return (
-                <Link
-                  href={link.URL}
-                  target="_blank"
-                  className="p-4 rounded-[6px] bg-purple-primary w-full capitalize flex justify-between items-center"
-                  style={{
-                    backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
-                  }}
-                  key={link.ID}>
-                  <span> {link.Platform}</span>
-                  <span>
-                    <ArrowRight size={16} />
-                  </span>
-                </Link>
-              );
-            })}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
+  try {
+    const response = await fetch(`${apiEndpoint}/users/profile/${username}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      return {
+        title: "User Not Found | DevLinks",
+        description: "The requested user profile could not be found.",
+      };
+    }
+
+    const { data: userData } = await response.json();
+
+    return {
+      title: `${userData.username}'s Links | DevLinks`,
+      description:
+        userData.bio || `Check out ${userData.username}'s profile on DevLinks`,
+      openGraph: {
+        title: `${userData.username}'s Links | DevLinks`,
+        description:
+          userData.bio ||
+          `Check out ${userData.username}'s profile on DevLinks`,
+        images: userData.user_image ? [userData.user_image] : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${userData.username}'s Links | DevLinks`,
+        description:
+          userData.bio ||
+          `Check out ${userData.username}'s profile on DevLinks`,
+        images: userData.user_image ? [userData.user_image] : [],
+      },
+    };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return {
+      title: "Error | DevLinks",
+      description: "An error occurred while loading the user profile.",
+    };
+  }
 }

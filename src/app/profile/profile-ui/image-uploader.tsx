@@ -2,7 +2,7 @@
 
 import Spinner from "@/components/resusables/spinner";
 import { Button } from "@/components/ui/button";
-import { useUpdateUserImage } from "@/queries/user/user";
+import { useUpdateUserImage } from "@/queries/user/user-image";
 import { useUserStore } from "@/store/useUserStore";
 import Image from "next/image";
 import { useState } from "react";
@@ -13,10 +13,10 @@ import { ImagePreview } from "./image-preview";
 export default function ProfileImageUploader() {
   const { user, updateUser } = useUserStore((store) => store);
   const [originalImage, setOriginalImage] = useState(
-    user.user_image || "/placeholder.jpg"
+    user.user_image || "/placeholder.webp"
   );
   const [previewImage, setPreviewImage] = useState(
-    user.user_image || "/placeholder.jpg"
+    user.user_image || "/placeholder.webp"
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -55,7 +55,7 @@ export default function ProfileImageUploader() {
     updateImage(selectedFile, {
       onSuccess: (response) => {
         console.log("Image response", response);
-        if (!response.url) {
+        if (!response.data) {
           toast.error(
             "Image update failed. The server did not return a valid URL. Please try again or contact support."
           );
@@ -67,7 +67,7 @@ export default function ProfileImageUploader() {
         toast.success("Image updated successfully!");
         setOriginalImage(previewImage);
 
-        updateUser({ user_image: response.url });
+        updateUser({ user_image: response.data });
         setUnsavedChange(false);
         setSelectedFile(null);
       },

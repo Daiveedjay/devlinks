@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signupSchema } from "@/lib/validation";
-import { AuthPayload, useSignup } from "@/queries/auth/signup";
+import { useSignup } from "@/queries/auth/signup";
+import { AuthPayload } from "@/queries/auth/types/types";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github, Lock, Mail } from "lucide-react";

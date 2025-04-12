@@ -27,8 +27,6 @@ export default function PhonePreview() {
   // Add useLinks hook to get the data
   const { isPending } = useFetchLinks();
 
-  console.log("Preview Links", links);
-
   return (
     <div className="relative preview__component  w-[280px]  h-[575px]">
       {" "}
@@ -59,7 +57,7 @@ export default function PhonePreview() {
           {/* Profile Image */}
           <div className="w-[88px] h-[88px] rounded-full overflow-hidden bg-[#EEEEEE] mb-[24px]">
             <Image
-              src={user_image === "" ? "/placeholder.jpg" : user_image}
+              src={user_image === "" ? "/placeholder.webp" : user_image}
               alt="Profile"
               width={88}
               height={88}

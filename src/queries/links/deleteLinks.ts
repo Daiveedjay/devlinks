@@ -1,20 +1,12 @@
-import { apiEndpoint } from "@/lib/constants";
-import { useLinkStore } from "@/store/useLinkStore";
+import { ApiError, ApiResponse } from "../auth/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useLinkStore } from "@/store/useLinkStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
+import { apiEndpoint } from "@/lib/constants";
 
-export type DeleteLinkResponse =
-  | { message: string; error?: undefined }
-  | { error: string; message?: undefined };
-
-export interface ApiError {
-  status: number;
-  message: string;
-}
-
-const deleteLink = async (id: number): Promise<DeleteLinkResponse> => {
+const deleteLink = async (id: number): Promise<ApiResponse> => {
   const response = await fetch(`${apiEndpoint}/links/${id}`, {
     method: "DELETE",
     headers: {
@@ -23,20 +15,16 @@ const deleteLink = async (id: number): Promise<DeleteLinkResponse> => {
     credentials: "include",
   });
 
-  if (response.status === 401) {
-    // Throw a custom error with a status so we can check it later
-    throw { status: 401, message: "Unauthorized" } as ApiError;
-  }
+  const data: ApiResponse = await response.json();
 
-  if (!response.ok) {
-    const errorData = await response.json();
+  if (!response.ok || data.error) {
     throw {
       status: response.status,
-      message: errorData.message || "Error deleting link",
+      message: data.message || "Error deleting link",
     } as ApiError;
   }
 
-  return response.json();
+  return data;
 };
 
 export const useDeleteLink = () => {
@@ -51,42 +39,39 @@ export const useDeleteLink = () => {
 
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ["links", userId] });
+
       const previousLinks = links;
-      // Optimistically remove the link
-      const optimisticLinks = previousLinks.filter((link) => link.ID !== id);
+      const optimisticLinks =
+        previousLinks?.filter((link) => link.ID !== id) ?? [];
       setLinks(optimisticLinks);
+
       return { previousLinks };
     },
 
-    onError: (error: unknown, __, context) => {
-      // If the error is our custom ApiError, check its status
-      if (typeof error === "object" && error !== null && "status" in error) {
-        const err = error as ApiError;
-        if (err.status === 401) {
-          setIsUnauthorized(true);
-        }
+    onError: (error: ApiError, __, context) => {
+      if (error.status === 401) {
+        setIsUnauthorized(true);
       }
-      // Rollback to previous links if available
       if (context?.previousLinks) {
         setLinks(context.previousLinks);
       }
       toast.error(
-        "An error occurred while deleting the link. Please try again."
+        error.message ||
+          "An error occurred while deleting the link. Please try again."
       );
     },
 
     onSuccess: (apiResponse, id, context) => {
-      // Check if the response contains an error property
-      if ("error" in apiResponse && apiResponse.error) {
+      if (apiResponse.error) {
         toast.error(
-          apiResponse.error || "An error occurred. Please try again."
+          apiResponse.message || "An error occurred. Please try again."
         );
         if (context?.previousLinks) {
           setLinks(context.previousLinks);
         }
         return;
       }
-      toast.success("Link deleted successfully!");
+      toast.success(apiResponse.message || "Link deleted successfully!");
     },
   });
 };

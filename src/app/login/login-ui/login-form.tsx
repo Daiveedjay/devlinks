@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/lib/validation";
 import { useLogin } from "@/queries/auth/login";
-import { AuthPayload } from "@/queries/auth/signup";
+import { AuthPayload } from "@/queries/auth/types/types";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github, Lock, Mail } from "lucide-react";
@@ -18,6 +18,28 @@ import { useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+// const googleLogin = async () => {
+//   // Call the backend endpoint for Google login.
+//   // We set redirect: 'manual' so we can get the redirect URL from the response.
+//   const response = await fetch(`${apiEndpoint}/auth/google/login`, {
+//     method: "POST",
+//     redirect: "manual", // tell fetch not to follow redirects automatically
+//   });
+
+//   // Your server is expected to respond with an HTTP 307 status and a 'Location' header.
+//   if (response.status === 307) {
+//     const redirectUrl = response.headers.get("Location");
+//     if (redirectUrl) {
+//       // Direct the browser to the Google OAuth URL
+//       window.location.href = redirectUrl;
+//       return; // Stop further processing if redirecting
+//     }
+//   }
+
+//   // If the redirect didn't occur, throw an error to be handled by the mutation
+//   throw new Error("Google login failed. No redirect URL found.");
+// };
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -38,15 +60,23 @@ export default function LoginForm() {
     login({ email: data.email, password: data.password });
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      // Implement Google login logic here
-      console.log("Logging in with Google");
-      // Example: await signInWithGoogle();
-    } catch (error) {
-      toast.error("Failed to login with Google");
-    }
+  // const { mutate, isLoading, error } = useMutation({
+  //   mutationFn: googleLogin,
+  // });
+
+  const handleGoogleLogin = () => {
+    window.location.href = "/auth/google/login";
   };
+
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     // Implement Google login logic here
+  //     console.log("Logging in with Google");
+  //     // Example: await signInWithGoogle();
+  //   } catch (error) {
+  //     toast.error("Failed to login with Google");
+  //   }
+  // };
 
   const handleGithubLogin = async () => {
     try {

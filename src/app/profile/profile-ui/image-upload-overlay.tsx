@@ -8,7 +8,7 @@ interface ImageUploadOverlayProps {
 export function ImageUploadOverlay({ onFileChange }: ImageUploadOverlayProps) {
   return (
     <motion.div
-      className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center cursor-pointer"
+      className="absolute inset-0 bg-black/50 rounded-lg flex flex-col items-center justify-center cursor-pointer"
       whileHover={{ opacity: 0.8 }}>
       <ImageIcon className="w-10 h-10 text-white mb-2" />
       <span className="text-white font-medium">Change Image</span>

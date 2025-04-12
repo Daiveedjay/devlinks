@@ -14,7 +14,7 @@ import UnsavedModal from "./unsaved-modal";
 
 export default function Navbar() {
   const router = useRouter();
-  const { links } = useLinkStore((store) => store);
+  const { links, cleanupEmptyLinks } = useLinkStore((store) => store);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
 
@@ -47,10 +47,13 @@ export default function Navbar() {
   };
 
   // Called when the user confirms to ignore unsaved changes.
+
   const handleIgnoreAndNavigate = () => {
     if (pendingRoute === "/logout") {
       logout.mutate();
     } else if (pendingRoute) {
+      cleanupEmptyLinks();
+
       router.push(pendingRoute);
     }
     setIsDialogOpen(false);

@@ -1,18 +1,16 @@
-import { Link, useLinkStore } from "@/store/useLinkStore";
-import { apiEndpoint } from "@/lib/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ApiResponse, isErrorResponse } from "../auth/signup";
+import { useLinkStore } from "@/store/useLinkStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
+import { ApiError, ApiResponse } from "../auth/types/types";
+import { apiEndpoint } from "@/lib/constants";
+import { Link } from "@/store/useLinkStore";
 
-// Define a custom error type for API errors.
-export interface ApiError {
-  status: number;
-  message: string;
-}
-
-const updateLink = async (id: number, link: Link): Promise<ApiResponse> => {
+const updateLink = async (
+  id: number,
+  link: Link
+): Promise<ApiResponse<Link>> => {
   const response = await fetch(`${apiEndpoint}/links/${id}`, {
     method: "PUT",
     headers: {
@@ -22,25 +20,22 @@ const updateLink = async (id: number, link: Link): Promise<ApiResponse> => {
     body: JSON.stringify(link),
   });
 
-  if (response.status === 401) {
-    throw { status: 401, message: "Unauthorized" } as ApiError;
-  }
+  const data: ApiResponse<Link> = await response.json();
 
-  if (!response.ok) {
-    const errorData = await response.json();
+  if (!response.ok || data.error) {
     throw {
       status: response.status,
-      message: errorData.message || "Error updating link",
+      message: data.message || "Error updating link",
     } as ApiError;
   }
 
-  return response.json();
+  return data;
 };
 
 export const useUpdateLink = () => {
   const { links, setLinks } = useLinkStore((store) => store);
   const user = useUserStore((store) => store.user);
-    const userId = user?.id;
+  const userId = user?.id;
   const queryClient = useQueryClient();
   const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 
@@ -50,7 +45,7 @@ export const useUpdateLink = () => {
 
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: ["links", userId] });
-      const previousLinks = links;
+      const previousLinks = links ?? [];
 
       // Optimistically update the link.
       const optimisticLinks = previousLinks.map((link) =>
@@ -60,32 +55,29 @@ export const useUpdateLink = () => {
       return { previousLinks };
     },
 
-    onError: (error: unknown, __, context) => {
-      // Check if error is our custom ApiError and handle 401.
-      if (typeof error === "object" && error !== null && "status" in error) {
-        const err = error as ApiError;
-        if (err.status === 401) {
-          setIsUnauthorized(true);
-        }
+    onError: (error: ApiError, __, context) => {
+      if (error.status === 401) {
+        setIsUnauthorized(true);
       }
-      // Rollback the optimistic update.
       if (context?.previousLinks) {
         setLinks(context.previousLinks);
       }
-      toast.error("Failed to update the link. Please try again.");
+      toast.error(
+        error.message || "Failed to update the link. Please try again."
+      );
     },
 
     onSuccess: (apiResponse, _, context) => {
-      if (isErrorResponse(apiResponse)) {
+      if (apiResponse.error) {
         toast.error(
-          apiResponse.error || "An error occurred while updating the link."
+          apiResponse.message || "An error occurred while updating the link."
         );
         if (context?.previousLinks) {
           setLinks(context.previousLinks);
         }
         return;
       }
-      toast.success("Link updated successfully!");
+      toast.success(apiResponse.message || "Link updated successfully!");
     },
   });
 };

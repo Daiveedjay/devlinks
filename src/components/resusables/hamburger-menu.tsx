@@ -20,7 +20,7 @@ export default function HamburgerMenu() {
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
   const currentPath = usePathname();
   const router = useRouter();
-  const { links, cleanupEmptyLinks } = useLinkStore((store) => store);
+  const { links, cleanupEmptyLinks, setLinks } = useLinkStore((store) => store);
   const logout = useLogout();
 
   const hasUnsavedChanges = links.some(
@@ -54,6 +54,7 @@ export default function HamburgerMenu() {
     if (pendingRoute === "/logout") {
       logout.mutate();
     } else if (pendingRoute) {
+      setLinks(links.filter((link) => link.isNew === false));
       router.push(pendingRoute);
     }
     setIsDialogOpen(false);
