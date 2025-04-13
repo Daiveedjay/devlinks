@@ -46,6 +46,13 @@ export default function LoginForm() {
 
   const { mutate: login, isPending } = useLogin();
 
+  // const { mutate } = useGoogleAuthCallback();
+
+  // useEffect(() => {
+  //   // When the component mounts, trigger the mutation to handle authentication
+  //   mutate();
+  // }, [mutate]);
+
   // Setup form validation
   const {
     register,
@@ -65,9 +72,8 @@ export default function LoginForm() {
   // });
 
   const handleGoogleLogin = () => {
-    window.location.href = "/auth/google/login";
+    window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`;
   };
-
   // const handleGoogleLogin = async () => {
   //   try {
   //     // Implement Google login logic here
@@ -164,6 +170,7 @@ export default function LoginForm() {
             <Input
               id="password"
               {...register("password")}
+              autoComplete="current-password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
