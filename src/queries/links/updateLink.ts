@@ -49,7 +49,7 @@ export const useUpdateLink = () => {
 
       // Optimistically update the link.
       const optimisticLinks = previousLinks.map((link) =>
-        link.ID === data.id ? { ...link, ...data.link } : link
+        link.ID === data.id ? { ...link, ...data.link, dirty: false } : link
       );
       setLinks(optimisticLinks);
       return { previousLinks };

@@ -1,22 +1,18 @@
-import { create } from "zustand";
 import { socialMediaSchema } from "@/lib/validation";
-import { v4 as uuidv4 } from "uuid";
+import { create } from "zustand";
 
 export interface Link {
   ID: number;
   Platform?: string;
   URL: string;
-  // New property to differentiate new vs. existing links
+  UserID?: number;
+  order: number; // Use lowercase consistently
   isNew?: boolean;
-  // Flag to indicate unsaved modifications on existing links
   dirty?: boolean;
-  // Store the original values for comparison
   original?: {
     Platform?: string;
     URL: string;
   };
-
-  renderKey?: string; // Add renderKey to force re-render
 }
 
 interface LinkStore {
@@ -55,11 +51,12 @@ export const useLinkStore = create<LinkStore>((set) => ({
         ID: newId,
         Platform: "",
         URL: "",
-        renderKey: uuidv4(),
+
         // Mark this link as new so we know it’s not saved yet.
         isNew: true,
         dirty: false,
         original: { Platform: "", URL: "" },
+        order: state.links.length + 1, // Set the order based on the current length of links
       };
       return {
         links: [...state.links, newLink],
@@ -106,19 +103,23 @@ export const useLinkStore = create<LinkStore>((set) => ({
     }),
 
   setLinks: (links) =>
-    set(() => {
+    set((state) => {
       const newErrors: Record<number, string | null> = {};
-      // When setting links from backend, mark them as existing (not new) and not dirty.
       const normalizedLinks = links.map((link) => {
+        const existingLink = state.links.find((l) => l.ID === link.ID);
         const result = socialMediaSchema.safeParse(link);
         newErrors[link.ID] = result.success
           ? null
           : result.error.format().URL?._errors[0] ?? null;
         return {
           ...link,
-          isNew: false,
-          dirty: false,
-          original: { Platform: link.Platform, URL: link.URL },
+          order: link.order ?? 0,
+          isNew: existingLink?.isNew ?? false,
+          dirty: link.dirty ?? existingLink?.dirty ?? false,
+          original: existingLink?.original ?? {
+            Platform: link.Platform,
+            URL: link.URL,
+          },
         };
       });
       return {

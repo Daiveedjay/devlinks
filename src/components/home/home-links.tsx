@@ -2,17 +2,24 @@
 
 import { Button } from "../ui/button";
 
-// import { fetchLinks, useAddLink } from "@/queries/useLinks";
-
 import { useLinkStore } from "@/store/useLinkStore";
 import LinksContainer from "./links-container";
 import NoLinks from "./no-links";
 import { useAddLink } from "@/queries/links/addLinks";
 import { fetchLinks, useFetchLinks } from "@/queries/links/getLinks";
 import Spinner from "../resusables/spinner";
-// import { useLinks } from "@/queries/useLinks";
+import { useAuthCallback } from "@/queries/auth/oauth";
+import { useEffect } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 export default function HomeLinks() {
+  const { mutate } = useAuthCallback();
+
+  useEffect(() => {
+    // When the component mounts, trigger the mutation to handle authentication
+    mutate();
+  }, [mutate]);
+
   const { links, addLink, errors } = useLinkStore((store) => store);
   console.log("Links", links);
 
@@ -34,6 +41,7 @@ export default function HomeLinks() {
 
   // const { addLink: addLinkAsync, fetchLinksAPI } = useLinks();
   const { mutate: addLinkAsync, isPending } = useAddLink();
+  const { isPending: isAuthPending } = useAuthCallback();
 
   return (
     <div className="flex flex-col">
@@ -43,39 +51,44 @@ export default function HomeLinks() {
           Add/edit/remove links below and then share all your profiles with the
           world!
         </p>
-        <Button
-          variant="outline"
-          className="w-full p-6"
-          onClick={() => fetchLinks()}>
+        <Button variant="outline" className="w-full p-6" onClick={fetchLinks}>
           Fetch
         </Button>
-        <Button
-          variant="outline"
-          className="w-full p-6"
-          onClick={() => {
-            addLink();
-            console.log("Adding link", links);
-          }}>
+        <Button variant="outline" className="w-full p-6" onClick={addLink}>
           Add new link
         </Button>
       </div>
       {links?.length === 0 ? <NoLinks /> : <LinksContainer />}
 
-      <div className=" border-t-2 p-6 flex justify-end">
-        <Button
-          className="px-8 py-6 disabled:!cursor-not-allowed"
-          variant="default"
-          disabled={!hasNewLinks || hasErrors || hasEmptyFields || isPending}
-          onClick={() => {
-            addLinkAsync([
-              ...links
-                .filter((link) => link.isNew)
-                .map(({ ID, Platform, URL }) => ({ ID, Platform, URL })),
-            ]);
-          }}>
-          {isPending && <Spinner />} Save
-        </Button>
-      </div>
+      {isAuthPending &&
+        Array.from({ length: 3 }).map((_, index) => {
+          return (
+            <Skeleton key={index} className="mb-4 h-16 rounded-lg w-full" />
+          );
+        })}
+
+      {links.length > 0 && (
+        <div className=" border-t-2 p-6 flex justify-end">
+          <Button
+            className="px-8 w-28 py-6 disabled:!cursor-not-allowed"
+            variant="default"
+            disabled={!hasNewLinks || hasErrors || hasEmptyFields || isPending}
+            onClick={() => {
+              addLinkAsync([
+                ...links
+                  .filter((link) => link.isNew)
+                  .map(({ ID, Platform, URL, order }) => ({
+                    ID,
+                    Platform,
+                    URL,
+                    order,
+                  })),
+              ]);
+            }}>
+            {isPending && <Spinner />} Save
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

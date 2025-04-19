@@ -7,6 +7,7 @@ import Spinner from "@/components/resusables/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { apiEndpoint } from "@/lib/constants";
 import { loginSchema } from "@/lib/validation";
 import { useLogin } from "@/queries/auth/login";
 import { AuthPayload } from "@/queries/auth/types/types";
@@ -14,44 +15,18 @@ import { AuthPayload } from "@/queries/auth/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-
-// const googleLogin = async () => {
-//   // Call the backend endpoint for Google login.
-//   // We set redirect: 'manual' so we can get the redirect URL from the response.
-//   const response = await fetch(`${apiEndpoint}/auth/google/login`, {
-//     method: "POST",
-//     redirect: "manual", // tell fetch not to follow redirects automatically
-//   });
-
-//   // Your server is expected to respond with an HTTP 307 status and a 'Location' header.
-//   if (response.status === 307) {
-//     const redirectUrl = response.headers.get("Location");
-//     if (redirectUrl) {
-//       // Direct the browser to the Google OAuth URL
-//       window.location.href = redirectUrl;
-//       return; // Stop further processing if redirecting
-//     }
-//   }
-
-//   // If the redirect didn't occur, throw an error to be handled by the mutation
-//   throw new Error("Google login failed. No redirect URL found.");
-// };
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isAuthProcessing, setIsAuthProcessing] = useState(false);
 
   const { mutate: login, isPending } = useLogin();
 
-  // const { mutate } = useGoogleAuthCallback();
-
-  // useEffect(() => {
-  //   // When the component mounts, trigger the mutation to handle authentication
-  //   mutate();
-  // }, [mutate]);
+  const router = useRouter();
 
   // Setup form validation
   const {
@@ -67,31 +42,9 @@ export default function LoginForm() {
     login({ email: data.email, password: data.password });
   };
 
-  // const { mutate, isLoading, error } = useMutation({
-  //   mutationFn: googleLogin,
-  // });
-
-  const handleGoogleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`;
-  };
-  // const handleGoogleLogin = async () => {
-  //   try {
-  //     // Implement Google login logic here
-  //     console.log("Logging in with Google");
-  //     // Example: await signInWithGoogle();
-  //   } catch (error) {
-  //     toast.error("Failed to login with Google");
-  //   }
-  // };
-
-  const handleGithubLogin = async () => {
-    try {
-      // Implement GitHub login logic here
-      console.log("Logging in with GitHub");
-      // Example: await signInWithGithub();
-    } catch (error) {
-      toast.error("Failed to login with GitHub");
-    }
+  const handleOAuth = (provider: string) => {
+    setIsAuthProcessing(true);
+    router.push(`${apiEndpoint}/auth/${provider}`);
   };
 
   return (
@@ -114,17 +67,19 @@ export default function LoginForm() {
         <Button
           type="button"
           variant="outline"
+          disabled={isAuthProcessing}
           className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
-          onClick={handleGoogleLogin}>
-          <GoogleIcon />
+          onClick={() => handleOAuth("google")}>
+          {isAuthProcessing ? <Spinner /> : <GoogleIcon />}
           Continue with Google
         </Button>
         <Button
           type="button"
           variant="outline"
+          disabled={isAuthProcessing}
           className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
-          onClick={handleGithubLogin}>
-          <Github className="w-5 h-5 mr-2" />
+          onClick={() => handleOAuth("github")}>
+          {isAuthProcessing ? <Spinner /> : <Github className="w-5 h-5 mr-2" />}
           Continue with GitHub
         </Button>
       </div>
@@ -152,6 +107,7 @@ export default function LoginForm() {
               {...register("email")}
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="e.g. alex@email.com"
               className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
             />

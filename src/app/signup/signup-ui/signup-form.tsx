@@ -7,6 +7,7 @@ import Spinner from "@/components/resusables/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { apiEndpoint } from "@/lib/constants";
 import { signupSchema } from "@/lib/validation";
 import { useSignup } from "@/queries/auth/signup";
 import { AuthPayload } from "@/queries/auth/types/types";
@@ -14,6 +15,7 @@ import { AuthPayload } from "@/queries/auth/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -21,6 +23,10 @@ import { useForm } from "react-hook-form";
 
 export default function SignupForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const [isAuthProcessing, setIsAuthProcessing] = useState(false);
+
+  const router = useRouter();
 
   const { mutate: signup, isPending } = useSignup();
 
@@ -34,30 +40,13 @@ export default function SignupForm() {
   });
 
   const onSubmit = (data: AuthPayload & { confirmPassword: string }) => {
-    console.log("Signup Data:", data);
-
     signup({ email: data.email, password: data.password });
   };
 
-  // const handleGoogleSignup = async () => {
-  //   try {
-  //     // Implement Google signup logic here
-  //     console.log("Signing up with Google");
-  //     // Example: await signUpWithGoogle();
-  //   } catch (error) {
-  //     toast.error("Failed to sign up with Google");
-  //   }
-  // };
-
-  // const handleGithubSignup = async () => {
-  //   try {
-  //     // Implement GitHub signup logic here
-  //     console.log("Signing up with GitHub");
-  //     // Example: await signUpWithGithub();
-  //   } catch (error) {
-  //     toast.error("Failed to sign up with GitHub");
-  //   }
-  // };
+  const handleOAuth = (provider: string) => {
+    setIsAuthProcessing(true);
+    router.push(`${apiEndpoint}/auth/${provider}`);
+  };
 
   return (
     <div className="w-full max-w-md bg-white p-8 shadow-sm rounded-md">
@@ -79,19 +68,19 @@ export default function SignupForm() {
         <Button
           type="button"
           variant="outline"
+          disabled={isAuthProcessing}
           className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
-          // onClick={handleGoogleSignup}
-        >
-          <GoogleIcon />
+          onClick={() => handleOAuth("google")}>
+          {isAuthProcessing ? <Spinner /> : <GoogleIcon />}
           Continue with Google
         </Button>
         <Button
           type="button"
           variant="outline"
+          disabled={isAuthProcessing}
           className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
-          // onClick={handleGithubSignup}
-        >
-          <Github className="w-5 h-5 mr-2" />
+          onClick={() => handleOAuth("github")}>
+          {isAuthProcessing ? <Spinner /> : <Github className="w-5 h-5 mr-2" />}
           Continue with GitHub
         </Button>
       </div>
@@ -119,6 +108,7 @@ export default function SignupForm() {
               {...register("email")}
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="e.g. alex@email.com"
               className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
             />
@@ -136,6 +126,7 @@ export default function SignupForm() {
             </div>
             <Input
               id="create-password"
+              autoComplete="new-password"
               {...register("password")}
               type={showPassword ? "text" : "password"}
               placeholder="At least 8 characters"
@@ -166,6 +157,7 @@ export default function SignupForm() {
             <Input
               id="confirm-password"
               {...register("confirmPassword")}
+              autoComplete="new-password"
               type={showPassword ? "text" : "password"}
               placeholder="At least 8 characters"
               className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"

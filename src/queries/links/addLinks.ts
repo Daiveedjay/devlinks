@@ -8,7 +8,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { ApiResponse } from "../auth/types/types";
 import { ApiError } from "@/queries/auth/types/types";
 
-export const addLinks = async (
+const addLinks = async (
   newLinks: Link | Link[]
 ): Promise<ApiResponse<Link[]>> => {
   const linksToAdd = Array.isArray(newLinks) ? newLinks : [newLinks];

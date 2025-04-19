@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useLinkStore } from "@/store/useLinkStore";
 import { useUserStore } from "@/store/useUserStore";
@@ -14,7 +15,7 @@ import {
 } from "../ui/hover-card";
 import LinkPreview from "./link-preview";
 import { useFetchLinks } from "@/queries/links/getLinks";
-// import { useLinks } from "@/queries/useLinks";
+import { useAuthCallback } from "@/queries/auth/oauth";
 
 export default function PhonePreview() {
   // const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +27,7 @@ export default function PhonePreview() {
 
   // Add useLinks hook to get the data
   const { isPending } = useFetchLinks();
+  const { isPending: isAuthPending } = useAuthCallback();
 
   return (
     <div className="relative preview__component  w-[280px]  h-[575px]">
@@ -56,19 +58,22 @@ export default function PhonePreview() {
         <div className="flex flex-col items-center pt-[16px] px-6">
           {/* Profile Image */}
           <div className="w-[88px] h-[88px] rounded-full overflow-hidden bg-[#EEEEEE] mb-[24px]">
-            <Image
-              src={user_image === "" ? "/placeholder.webp" : user_image}
-              alt="Profile"
-              width={88}
-              height={88}
-              className={cn(
-                "w-full h-full object-cover duration-700 ease-in-out",
-                isPending
-                  ? "scale-110 blur-2xl grayscale"
-                  : "scale-100 blur-0 grayscale-0"
-              )}
-              // onLoad={() => setIsLoading(false)}
-            />
+            {isAuthPending ? (
+              <Skeleton className="w-[88px] aspect-square rounded-full" />
+            ) : (
+              <Image
+                src={user_image === "" ? "/placeholder.webp" : user_image}
+                alt="Profile"
+                width={88}
+                height={88}
+                className={cn(
+                  "w-full h-full object-cover duration-700 ease-in-out",
+                  isPending
+                    ? "scale-110 blur-2xl grayscale"
+                    : "scale-100 blur-0 grayscale-0"
+                )}
+              />
+            )}
           </div>
 
           {/* Profile Name */}
@@ -85,38 +90,42 @@ export default function PhonePreview() {
           {/* Links */}
           <div className="w-full space-y-4">
             {links?.length > 0
-              ? links?.map((link) => {
-                  const brand = link.Platform?.toLowerCase() || "default";
-                  const hasError = !!errors[link.ID];
-                  return (
-                    <HoverCard key={link.renderKey ?? link.ID}>
-                      <HoverCardTrigger asChild>
-                        <Link
-                          href={hasError ? "#" : link.URL} // Prevent navigation if there's an error
-                          target={hasError ? "_self" : "_blank"}
-                          rel="noopener noreferrer"
-                          style={{
-                            backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
-                          }}
-                          className={` items-center justify-between text-white w-full p-4 rounded-lg font-medium text-center flex transition-colors capitalize text-[14px] ${
-                            hasError ? "opacity-50 pointer-events-none" : ""
-                          }`}>
-                          <span> {link.Platform}</span>
-                          {!hasError && link.URL !== "" ? (
-                            <span>
-                              <ArrowRight size={16} />
-                            </span>
-                          ) : null}
-                        </Link>
-                      </HoverCardTrigger>
-                      {!hasError ? (
-                        <HoverCardContent className="w-full hover:bg-purple-light">
-                          <LinkPreview url={link.URL} />
-                        </HoverCardContent>
-                      ) : null}
-                    </HoverCard>
-                  );
-                })
+              ? // Filter by order from the first link to the last
+
+                links
+                  ?.sort((a, b) => a.order - b.order)
+                  ?.map((link) => {
+                    const brand = link.Platform?.toLowerCase() || "default";
+                    const hasError = !!errors[link.ID];
+                    return (
+                      <HoverCard key={link.order}>
+                        <HoverCardTrigger asChild>
+                          <Link
+                            href={hasError ? "#" : link.URL} // Prevent navigation if there's an error
+                            target={hasError ? "_self" : "_blank"}
+                            rel="noopener noreferrer"
+                            style={{
+                              backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
+                            }}
+                            className={` group items-center justify-between text-white w-full p-4 rounded-lg font-medium text-center flex transition-colors capitalize text-[14px] ${
+                              hasError ? "opacity-50 pointer-events-none" : ""
+                            }`}>
+                            <span> {link.Platform}</span>
+                            {!hasError && link.URL !== "" ? (
+                              <span className="transform transition-transform duration-300 group-hover:translate-x-1">
+                                <ArrowRight size={16} />
+                              </span>
+                            ) : null}
+                          </Link>
+                        </HoverCardTrigger>
+                        {!hasError ? (
+                          <HoverCardContent className="w-full hover:bg-purple-light">
+                            <LinkPreview url={link.URL} />
+                          </HoverCardContent>
+                        ) : null}
+                      </HoverCard>
+                    );
+                  })
               : Array.from({ length: 3 }).map((_, i) => (
                   <div
                     key={i}

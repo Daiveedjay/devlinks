@@ -58,7 +58,7 @@ export default function PreviewTemplate({
                   style={{
                     backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
                   }}
-                  key={link.ID}>
+                  key={link.order}>
                   <span> {link.Platform}</span>
                   <span>
                     <ArrowRight size={16} />

@@ -78,7 +78,7 @@ export default function ProfileForm() {
     <form
       className="w-full bg-gray-background p-8  space-y-4 "
       onSubmit={handleSubmit(onSubmit)}>
-      <div className="space-y-1 flex">
+      <div className="space-y-1 flex-col gap-1 sm:flex-row flex">
         <Label
           htmlFor="username"
           className=" text-gray-medium font-normal flex-1/3">
@@ -105,7 +105,7 @@ export default function ProfileForm() {
         </div>
       </div>
 
-      <div className="space-y-2 relative flex mt-12">
+      <div className="space-y-2 flex-col gap-1 sm:flex-row relative flex mt-12">
         <Label htmlFor="bio" className=" text-gray-medium font-normal flex-1/3">
           Bio *
         </Label>
@@ -126,14 +126,14 @@ export default function ProfileForm() {
           <ErrorText value={errors.bio} />
         </div>
         <div
-          className={`absolute -top-1 -translate-y-full right-0  text-sm ${
+          className={`absolute -top-1 translate-y-1/5  sm:-translate-y-full right-0 text-sm ${
             watchedBio.length >= 200 ? "text-red-error font-medium" : ""
           }`}>
           {watchedBio.length} / 200
         </div>
       </div>
 
-      <div className="space-y-2 flex">
+      <div className="space-y-2 flex-col gap-1 sm:flex-row flex">
         <Label
           htmlFor="email"
           className=" text-gray-medium font-normal flex-1/3">
@@ -162,7 +162,7 @@ export default function ProfileForm() {
           disabled={
             Object.keys(errors).length > 0 || isPending || !hasChanges // Add this condition
           }>
-          {isPending ? <Spinner /> : "Save"}
+          {isPending && <Spinner />} Save
         </Button>
       </div>
     </form>

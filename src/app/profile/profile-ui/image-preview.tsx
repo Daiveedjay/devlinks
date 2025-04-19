@@ -10,6 +10,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import ProfileImageModal from "@/components/resusables/profile-image-modal";
+import { useState } from "react";
+import { useUserStore } from "@/store/useUserStore";
+import { useUpdateUserImage } from "@/queries/user/user-image";
 
 interface ImagePreviewProps {
   previewImage: string | StaticImageData;
@@ -22,6 +26,11 @@ export function ImagePreview({
   onRemove,
   onFileChange,
 }: ImagePreviewProps) {
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  const user = useUserStore((store) => store.user);
+
+  const { isPending } = useUpdateUserImage();
   return (
     <>
       <Image
@@ -34,7 +43,13 @@ export function ImagePreview({
       <div className="absolute translate-y-full bottom-0 left-0 right-0 flex items-center justify-between p-2 gap-2">
         <TooltipProvider>
           <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
+            <TooltipTrigger
+              asChild
+              onClick={(e) => {
+                if (isPending) return;
+                e.preventDefault();
+                setIsImageModalOpen(true);
+              }}>
               <span className="hover:-translate-y-1 duration-300 transition-all p-1 text-purple-primary cursor-pointer rounded-full">
                 <Fullscreen strokeWidth={1} />
               </span>
@@ -47,10 +62,14 @@ export function ImagePreview({
 
         <TooltipProvider>
           <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
-              <span
-                className="hover:-translate-y-1 duration-300 transition-all p-1 text-red-error cursor-pointer rounded-full"
-                onClick={onRemove}>
+            <TooltipTrigger
+              asChild
+              onClick={(e) => {
+                if (isPending) return;
+                e.preventDefault();
+                onRemove();
+              }}>
+              <span className="hover:-translate-y-1 duration-300 transition-all p-1 text-red-error cursor-pointer rounded-full">
                 <ImageMinus strokeWidth={1} />
               </span>
             </TooltipTrigger>
@@ -62,7 +81,12 @@ export function ImagePreview({
 
         <TooltipProvider>
           <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
+            <TooltipTrigger
+              asChild
+              onClick={(e) => {
+                if (isPending) return;
+                e.preventDefault();
+              }}>
               <span className="hover:-translate-y-1 duration-300 transition-all p-1 text-chart-4 rounded-full relative">
                 <Replace strokeWidth={1} />
                 <input
@@ -79,6 +103,13 @@ export function ImagePreview({
           </Tooltip>
         </TooltipProvider>
       </div>
+
+      <ProfileImageModal
+        isOpen={isImageModalOpen}
+        setIsOpen={setIsImageModalOpen}
+        imageUrl={user.user_image}
+        username={user.username}
+      />
     </>
   );
 }
