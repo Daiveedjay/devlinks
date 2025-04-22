@@ -7,12 +7,11 @@ export const ProfileButton = ({
 }: {
   handleNavigation: (e: React.MouseEvent, path: string) => void;
 }) => {
-
-    const currentPath = usePathname();
+  const currentPath = usePathname();
   return (
     <Button
       variant={currentPath === "/profile" ? "active" : "ghost"}
-      className=" w-32  xl:w-40 flex items-center justify-center !py-6"
+      className=" w-32 dark:text-foreground  xl:w-40 flex items-center justify-center !py-6"
       onClick={(e) => handleNavigation(e, "/profile")}>
       <CircleUserRound
         className={`h-5 w-5 ${

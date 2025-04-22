@@ -29,6 +29,8 @@ interface LinkStore {
   cleanupEmptyLinks: () => void;
 
   clearLinksStore: () => void;
+
+  hasUnsavedChanges: () => boolean;
 }
 
 export const useLinkStore = create<LinkStore>((set) => ({
@@ -154,6 +156,14 @@ export const useLinkStore = create<LinkStore>((set) => ({
           (link?.URL?.trim() ?? "") !== ""
       ),
     }));
+  },
+
+  hasUnsavedChanges: (): boolean => {
+    const state = useLinkStore.getState();
+    return state.links.some(
+      (link) =>
+        link.isNew || link.Platform === "" || link.URL === "" || link.dirty
+    );
   },
   clearLinksStore: () => set(() => ({ links: [], errors: {} })),
 }));

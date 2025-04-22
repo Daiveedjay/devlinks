@@ -44,7 +44,7 @@ export default function HomeLinks() {
   const { isPending: isAuthPending } = useAuthCallback();
 
   return (
-    <div className="flex flex-col">
+    <div className="flex  flex-col">
       <div className=" mb-6">
         <h2 className="medium__header mb-2">Customize your links</h2>
         <p className="medium__text mb-10">

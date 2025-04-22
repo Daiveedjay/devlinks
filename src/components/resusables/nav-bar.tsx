@@ -14,19 +14,22 @@ import UnsavedModal from "./unsaved-modal";
 
 export default function Navbar() {
   const router = useRouter();
-  const { links, cleanupEmptyLinks } = useLinkStore((store) => store);
+  const { cleanupEmptyLinks, hasUnsavedChanges } = useLinkStore(
+    (store) => store
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
 
   const logout = useLogout();
 
-  const hasUnsavedChanges = links.some(
-    (link) => link.isNew || link.Platform === "" || link.URL === ""
-  );
+  // const hasUnsavedChanges = links.some(
+  //   (link) =>
+  //     link.isNew || link.Platform === "" || link.URL === "" || link.dirty
+  // );
 
   // Intercept navigation
   const handleNavigation = (event: React.MouseEvent, path: string) => {
-    if (hasUnsavedChanges) {
+    if (hasUnsavedChanges()) {
       event.preventDefault(); // Prevent routing
       setPendingRoute(path); // Store the path
       setIsDialogOpen(true); // Show dialog
@@ -37,7 +40,7 @@ export default function Navbar() {
 
   // For logout: check for unsaved changes and call logout when confirmed.
   const handleLogout = (event: React.MouseEvent) => {
-    if (hasUnsavedChanges) {
+    if (hasUnsavedChanges()) {
       event.preventDefault();
       setPendingRoute("/logout");
       setIsDialogOpen(true);
@@ -62,7 +65,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="py-4 bg-white px-8 flex items-center">
+      <nav className="py-4 bg-background px-8 flex items-center">
         <div className="flex-1/3 flex justify-start">
           <Logo />
         </div>
@@ -71,6 +74,7 @@ export default function Navbar() {
             <HomeLinksButton />
             <ProfileButton handleNavigation={handleNavigation} />
             <LogoutButton handleLogout={handleLogout} />
+
             <PreviewButton handleNavigation={handleNavigation} />
           </div>
         </div>

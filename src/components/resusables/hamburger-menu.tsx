@@ -20,16 +20,14 @@ export default function HamburgerMenu() {
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
   const currentPath = usePathname();
   const router = useRouter();
-  const { links, cleanupEmptyLinks, setLinks } = useLinkStore((store) => store);
-  const logout = useLogout();
 
-  const hasUnsavedChanges = links.some(
-    (link) => link.isNew || link.Platform === "" || link.URL === ""
-  );
+  const { links, cleanupEmptyLinks, setLinks, hasUnsavedChanges } =
+    useLinkStore((store) => store);
+  const logout = useLogout();
 
   // Intercept navigation
   const handleNavigation = (event: React.MouseEvent, path: string) => {
-    if (hasUnsavedChanges) {
+    if (hasUnsavedChanges()) {
       event.preventDefault(); // Prevent routing
       setPendingRoute(path); // Store the path
       setIsDialogOpen(true); // Show dialog
@@ -40,7 +38,7 @@ export default function HamburgerMenu() {
 
   // For logout: check for unsaved changes and call logout when confirmed.
   const handleLogout = (event: React.MouseEvent) => {
-    if (hasUnsavedChanges) {
+    if (hasUnsavedChanges()) {
       event.preventDefault();
       setPendingRoute("/logout");
       setIsDialogOpen(true);

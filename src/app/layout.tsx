@@ -4,6 +4,7 @@ import { Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "./query-provider";
 import UnauthorizedModal from "@/components/resusables/unauthorized-modal";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
@@ -26,11 +27,17 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${instrumentSans.variable} font-sans text-gray-medium antialiased`}>
-        <QueryProvider>
-          {children}
-          <Toaster position="top-right" />
-          <UnauthorizedModal />
-        </QueryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange>
+          <QueryProvider>
+            {children}
+            <Toaster position="top-right" />
+            <UnauthorizedModal />
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

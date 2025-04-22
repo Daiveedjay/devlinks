@@ -53,12 +53,10 @@ export default function LinksContainer() {
   };
 
   const handleDragEnd = (result: DropResult) => {
-    // If dropped outside the list or no destination
     if (!result.destination) return;
 
     const { source, destination } = result;
 
-    // If dropped in the same position
     if (source.index === destination.index) return;
 
     // Create a copy of the current links array
@@ -68,14 +66,19 @@ export default function LinksContainer() {
     // Insert it at the new position
     newLinks.splice(destination.index, 0, reorderedItem);
 
-    // Update the order property for all items and mark as dirty if order changed
-    const updatedLinks = newLinks.map((link, index) => ({
-      ...link,
-      order: index + 1,
-      dirty: link.order !== index + 1 ? true : link.dirty,
-    }));
+    // Only mark links as dirty if their order actually changed
+    const updatedLinks = newLinks.map((link, index) => {
+      const newOrder = index + 1;
+      const originalOrder = links.find((l) => l.ID === link.ID)?.order;
 
-    // Update the store with new links array
+      return {
+        ...link,
+        order: newOrder,
+        // Only mark as dirty if this link's order changed
+        dirty: originalOrder !== newOrder ? true : link.dirty,
+      };
+    });
+
     setLinks(updatedLinks);
   };
 
@@ -96,7 +99,7 @@ export default function LinksContainer() {
                   <li
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className={`bg-gray-background p-6 border-2 rounded-[6px] ${
+                    className={`bg-gray-background dark:bg-sidebar-border p-6 border-2 rounded-[6px] ${
                       snapshot.isDragging
                         ? " border-purple-primary"
                         : " border-transparent"

@@ -30,7 +30,7 @@ export default function PhonePreview() {
   const { isPending: isAuthPending } = useAuthCallback();
 
   return (
-    <div className="relative preview__component  w-[280px]  h-[575px]">
+    <div className="relative  preview__component  w-[280px]  h-[575px]">
       {" "}
       {/* Adjusted to 280x575 */}
       {/* Phone Frame SVG */}
@@ -54,7 +54,7 @@ export default function PhonePreview() {
         />
       </svg>
       {/* Content Container */}
-      <div className="absolute h-4/5  overflow-auto top-[60px] left-[11px] right-[11px] bottom-[11px] ">
+      <div className="absolute h-4/5    overflow-auto top-[60px] left-[11px] right-[11px] bottom-[11px] ">
         <div className="flex flex-col items-center pt-[16px] px-6">
           {/* Profile Image */}
           <div className="w-[88px] h-[88px] rounded-full overflow-hidden bg-[#EEEEEE] mb-[24px]">
