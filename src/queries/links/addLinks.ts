@@ -7,6 +7,7 @@ import { useLinkStore } from "@/store/useLinkStore";
 import { useUserStore } from "@/store/useUserStore";
 import { ApiResponse } from "../auth/types/types";
 import { ApiError } from "@/queries/auth/types/types";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const addLinks = async (
   newLinks: Link | Link[]
@@ -25,7 +26,10 @@ const addLinks = async (
   const data: ApiResponse<Link[]> = await response.json();
 
   if (!response.ok || data.error) {
-    throw new Error(data.message || "Error adding link");
+    throw {
+      status: response.status,
+      message: data.message || "Error adding links",
+    } as ApiError;
   }
 
   return data;
@@ -33,6 +37,7 @@ const addLinks = async (
 
 export const useAddLink = () => {
   const { setLinks, links, markLinkAsSaved } = useLinkStore((store) => store);
+  const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
   const user = useUserStore((store) => store.user);
   const userId = user?.id;
   const queryClient = useQueryClient();
@@ -71,11 +76,29 @@ export const useAddLink = () => {
         markLinkAsSaved(link.ID);
       });
 
-      toast.success(apiResponse.message || "Links added successfully!");
+      // toast.success(apiResponse.message || "Links added successfully!");
+
+      toast(apiResponse.message || "Links added successfully!", {
+        className: "success-toast",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <CircleCheck />,
+      });
     },
 
     onError: (error: ApiError, _newLinks, context) => {
-      toast.error(error.message);
+      if (error.status === 401) {
+        setIsUnauthorized(true);
+        return false;
+      }
+      // toast.error(error.message);
+
+      toast(error.message, {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <ShieldAlert />,
+      });
       if (context?.previousLinks) {
         setLinks(context.previousLinks);
       }

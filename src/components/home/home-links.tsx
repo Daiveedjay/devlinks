@@ -2,15 +2,17 @@
 
 import { Button } from "../ui/button";
 
+import { useAuthCallback } from "@/queries/auth/oauth";
+import { useAddLink } from "@/queries/links/addLinks";
+import { useFetchLinks } from "@/queries/links/getLinks";
 import { useLinkStore } from "@/store/useLinkStore";
+import { CircleCheck } from "lucide-react";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import Spinner from "../resusables/spinner";
+import { Skeleton } from "../ui/skeleton";
 import LinksContainer from "./links-container";
 import NoLinks from "./no-links";
-import { useAddLink } from "@/queries/links/addLinks";
-import { fetchLinks, useFetchLinks } from "@/queries/links/getLinks";
-import Spinner from "../resusables/spinner";
-import { useAuthCallback } from "@/queries/auth/oauth";
-import { useEffect } from "react";
-import { Skeleton } from "../ui/skeleton";
 
 export default function HomeLinks() {
   const { mutate } = useAuthCallback();
@@ -47,11 +49,21 @@ export default function HomeLinks() {
     <div className="flex  flex-col">
       <div className=" mb-6">
         <h2 className="medium__header mb-2">Customize your links</h2>
-        <p className="medium__text mb-10">
+        <p className="medium__text mb-6 sm:mb-10">
           Add/edit/remove links below and then share all your profiles with the
           world!
         </p>
-        <Button variant="outline" className="w-full p-6" onClick={fetchLinks}>
+        <Button
+          variant="outline"
+          className="w-full p-6"
+          onClick={() => {
+            toast("A Sonner toast", {
+              className: "success-toast",
+              // description: "With a description and an icon",
+              duration: 2000,
+              icon: <CircleCheck />,
+            });
+          }}>
           Fetch
         </Button>
         <Button variant="outline" className="w-full p-6" onClick={addLink}>

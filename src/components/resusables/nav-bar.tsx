@@ -11,10 +11,11 @@ import { LogoutButton } from "./logout-button";
 import { PreviewButton } from "./preview-button";
 import { ProfileButton } from "./profile-button";
 import UnsavedModal from "./unsaved-modal";
+import { ThemeToggle } from "./theme-toggle";
 
 export default function Navbar() {
   const router = useRouter();
-  const { cleanupEmptyLinks, hasUnsavedChanges } = useLinkStore(
+  const { hasUnsavedChanges, revertUnsavedChanges } = useLinkStore(
     (store) => store
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -55,7 +56,7 @@ export default function Navbar() {
     if (pendingRoute === "/logout") {
       logout.mutate();
     } else if (pendingRoute) {
-      cleanupEmptyLinks();
+      revertUnsavedChanges();
 
       router.push(pendingRoute);
     }
@@ -65,7 +66,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="py-4 bg-background px-8 flex items-center">
+      <nav className="py-4 relative bg-background px-4 sm:px-8 flex items-center">
         <div className="flex-1/3 flex justify-start">
           <Logo />
         </div>
@@ -79,7 +80,8 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="lg:hidden flex">
+        <div className="lg:hidden items-center gap-6 flex">
+          <ThemeToggle />
           <HamburgerMenu />
         </div>
       </nav>

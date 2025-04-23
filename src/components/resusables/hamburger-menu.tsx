@@ -6,7 +6,7 @@ import { useClickOutside } from "@/lib/hooks";
 import { useLogout } from "@/queries/auth/logout";
 import { useLinkStore } from "@/store/useLinkStore";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
-import { CircleUserRound, LinkIcon, LogOut } from "lucide-react";
+import { CircleUserRound, LinkIcon, LogOut, View } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -21,7 +21,7 @@ export default function HamburgerMenu() {
   const currentPath = usePathname();
   const router = useRouter();
 
-  const { links, cleanupEmptyLinks, setLinks, hasUnsavedChanges } =
+  const { links, revertUnsavedChanges, setLinks, hasUnsavedChanges } =
     useLinkStore((store) => store);
   const logout = useLogout();
 
@@ -57,7 +57,7 @@ export default function HamburgerMenu() {
     }
     setIsDialogOpen(false);
     setPendingRoute(null);
-    cleanupEmptyLinks();
+    revertUnsavedChanges();
   };
 
   useClickOutside(buttonRef, () => setActive(false));
@@ -75,7 +75,7 @@ export default function HamburgerMenu() {
             initial={false}
             animate={active ? "open" : "closed"}
             onClick={() => setActive((pv) => !pv)}
-            className="relative h-[50px] w-[50px] rounded-full transition-colors cursor-pointer hover:bg-white/20 z-50">
+            className="relative h-[50px] w-[50px] rounded-full transition-colors cursor-pointer  z-50">
             <motion.span
               variants={HAMBURGER_VARIANTS.top}
               className="absolute h-1 w-10 bg-purple-primary rounded-sm"
@@ -108,8 +108,8 @@ export default function HamburgerMenu() {
               animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className={`absolute top-[60px] right-0 w-56 bg-white rounded-lg  
-shadow-lg h-60 border border-gray-200 overflow-hidden z-40 ${
+              className={`absolute top-[60px] right-0 w-56 bg-sidebar rounded-lg  
+shadow-lg h-60 border border-gray-200 overflow-hidden dark:border-sidebar-accent z-40 ${
                 !active && "hidden"
               }`}>
               <div className="flex flex-col h-full p-2  ">
@@ -118,10 +118,14 @@ shadow-lg h-60 border border-gray-200 overflow-hidden z-40 ${
                   <Link href="/" onClick={() => setActive(false)}>
                     <Button
                       variant={currentPath === "/" ? "active" : "ghost"}
-                      className="w-full flex items-center justify-start gap-3 py-3 px-4 mb-1">
+                      className={`w-full flex items-center dark:text-foreground group justify-start gap-3 py-3 px-4 mb-1 ${
+                        currentPath !== "/" && "dark:hover:text-sidebar-primary"
+                      }`}>
                       <LinkIcon
-                        className={`h-5 w-5 ${
-                          currentPath === "/" ? "text-purple-primary" : ""
+                        className={`h-5 dark:text-foreground w-5 ${
+                          currentPath === "/"
+                            ? "text-purple-primary"
+                            : "dark:group-hover:text-sidebar-primary duration-200"
                         }`}
                       />
                       <span>Links</span>
@@ -130,11 +134,16 @@ shadow-lg h-60 border border-gray-200 overflow-hidden z-40 ${
 
                   <Button
                     variant={currentPath === "/profile" ? "active" : "ghost"}
-                    className="w-full flex items-center justify-start gap-3 py-3 px-4 mb-1"
+                    className={`w-full group flex items-center dark:text-foreground justify-start gap-3 py-3 px-4 mb-1 ${
+                      currentPath !== "/profile" &&
+                      "dark:hover:text-sidebar-primary"
+                    }`}
                     onClick={(e) => handleNavigation(e, "/profile")}>
                     <CircleUserRound
-                      className={`h-5 w-5 ${
-                        currentPath === "/profile" ? "text-purple-primary" : ""
+                      className={`h-5 dark:text-foreground w-5 ${
+                        currentPath === "/profile"
+                          ? "text-purple-primary"
+                          : " dark:group-hover:text-sidebar-primary duration-200"
                       }`}
                     />
                     <span>Profile</span>
@@ -142,9 +151,9 @@ shadow-lg h-60 border border-gray-200 overflow-hidden z-40 ${
 
                   <Button
                     variant="outline"
-                    className="w-full py-3 px-4 flex items-center justify-start gap-3"
+                    className="w-full group py-3 px-4 flex items-center justify-start gap-3"
                     onClick={(e) => handleNavigation(e, "/preview")}>
-                    <CircleUserRound className="h-5 text-purple-primary w-5" />
+                    <View className="h-5 dark:group-hover:text-foreground text-purple-primary w-5" />
                     <span>Preview</span>
                   </Button>
                 </div>
@@ -153,9 +162,9 @@ shadow-lg h-60 border border-gray-200 overflow-hidden z-40 ${
                 <div className="mt-auto  pt-2">
                   <Button
                     variant="outline"
-                    className="w-full py-3 px-4 text-destructive !border-destructive hover:text-destructive hover:bg-destructive-foreground/20 flex items-center justify-start gap-3"
+                    className="w-full py-3 px-4 text-destructive !border-destructive hover:text-destructive hover:bg-destructive-foreground/20 flex dark:text-foreground items-center justify-start gap-3"
                     onClick={handleLogout}>
-                    <LogOut className="h-5 text-destructive w-5" />
+                    <LogOut className="h-5 text-destructive dark:text-foreground w-5" />
                     <span>Logout</span>
                   </Button>
                 </div>

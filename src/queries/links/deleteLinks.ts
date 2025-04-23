@@ -55,23 +55,47 @@ export const useDeleteLink = () => {
       if (context?.previousLinks) {
         setLinks(context.previousLinks);
       }
-      toast.error(
+      // toast.error(
+      //   error.message ||
+      //     "An error occurred while deleting the link. Please try again."
+      // );
+
+      toast(
         error.message ||
-          "An error occurred while deleting the link. Please try again."
+          "An error occurred while deleting the link. Please try again.",
+        {
+          className: "error-toast ",
+          // description: "With a description and an icon",
+          duration: 2000,
+          // icon: <ShieldAlert />,
+        }
       );
     },
 
     onSuccess: (apiResponse, id, context) => {
       if (apiResponse.error) {
-        toast.error(
-          apiResponse.message || "An error occurred. Please try again."
-        );
+        // toast.error(
+        //   apiResponse.message || "An error occurred. Please try again."
+        // );
+        toast(apiResponse.message || "An error occurred. Please try again.", {
+          className: "error-toast ",
+          // description: "With a description and an icon",
+          duration: 2000,
+          // icon: <ShieldAlert />,
+        });
         if (context?.previousLinks) {
           setLinks(context.previousLinks);
         }
         return;
       }
-      toast.success(apiResponse.message || "Link deleted successfully!");
+      // toast.success(apiResponse.message || "Link deleted successfully!");
+
+      toast(apiResponse.message || "Link deleted successfully!", {
+        className: "success-toast",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <CircleCheck />,
+      });
     },
   });
 };

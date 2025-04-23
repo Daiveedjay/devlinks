@@ -51,29 +51,29 @@ export function ThemeToggle() {
       <AnimatePresence initial={false}>
         {animating && (
           <motion.div
-            className="fixed inset-0 z-0 overflow-hidden pointer-events-none"
+            className="fixed inset-0 z-50 overflow-hidden pointer-events-none"
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}>
             <motion.div
-              className="absolute rounded-full bg-gray-900"
+              className="absolute bg-foreground rounded-full "
               initial={{
-                width: isDark ? "4000px" : "10px",
-                height: isDark ? "4000px" : "10px",
-                x: isDark ? position.x - 2000 : position.x - 5,
-                y: isDark ? position.y - 2000 : position.y - 5,
+                width: !isDark ? "4000px" : "10px", // Flipped isDark check
+                height: !isDark ? "4000px" : "10px", // Flipped isDark check
+                x: !isDark ? position.x - 2000 : position.x - 5, // Flipped isDark check
+                y: !isDark ? position.y - 2000 : position.y - 5, // Flipped isDark check
               }}
               animate={{
-                width: isDark ? "10px" : "4000px",
-                height: isDark ? "10px" : "4000px",
-                x: isDark ? position.x - 5 : position.x - 2000,
-                y: isDark ? position.y - 5 : position.y - 2000,
+                width: !isDark ? "10px" : "4000px", // Flipped isDark check
+                height: !isDark ? "10px" : "4000px", // Flipped isDark check
+                x: !isDark ? position.x - 5 : position.x - 2000, // Flipped isDark check
+                y: !isDark ? position.y - 5 : position.y - 2000, // Flipped isDark check
               }}
               transition={{
                 type: "spring",
                 stiffness: 30,
                 damping: 20,
-                duration: 1.5,
+                duration: 0.3,
               }}
             />
           </motion.div>

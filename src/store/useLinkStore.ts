@@ -12,6 +12,7 @@ export interface Link {
   original?: {
     Platform?: string;
     URL: string;
+    order?: number; // Use lowercase consistently
   };
 }
 
@@ -31,6 +32,8 @@ interface LinkStore {
   clearLinksStore: () => void;
 
   hasUnsavedChanges: () => boolean;
+
+  revertUnsavedChanges: () => void;
 }
 
 export const useLinkStore = create<LinkStore>((set) => ({
@@ -121,6 +124,7 @@ export const useLinkStore = create<LinkStore>((set) => ({
           original: existingLink?.original ?? {
             Platform: link.Platform,
             URL: link.URL,
+            order: link.order ?? 0,
           },
         };
       });
@@ -136,11 +140,13 @@ export const useLinkStore = create<LinkStore>((set) => ({
         l.ID === id
           ? {
               ...l,
-              // After a successful save, reset the flags.
               isNew: false,
               dirty: false,
-              // Update original to the current values
-              original: { Platform: l.Platform, URL: l.URL },
+              original: {
+                Platform: l.Platform,
+                URL: l.URL,
+                order: l.order, // Store the new order
+              },
             }
           : l
       ),
@@ -158,11 +164,44 @@ export const useLinkStore = create<LinkStore>((set) => ({
     }));
   },
 
+  revertUnsavedChanges: () =>
+    set((state) => {
+      // First, handle empty new links
+      const cleanedLinks = state.links.filter(
+        (link) =>
+          !link.isNew ||
+          (link?.Platform?.trim() ?? "") !== "" ||
+          (link?.URL?.trim() ?? "") !== ""
+      );
+
+      // Then, revert orders to original state for links with unsaved order changes
+      const revertedLinks = cleanedLinks.map((link) => ({
+        ...link,
+        order: link.original?.order ?? link.order,
+        dirty: false,
+      }));
+
+      // Sort links by their original order
+      const sortedLinks = revertedLinks.sort(
+        (a, b) =>
+          (a.original?.order ?? a.order) - (b.original?.order ?? b.order)
+      );
+
+      return {
+        links: sortedLinks,
+        errors: {},
+      };
+    }),
+
   hasUnsavedChanges: (): boolean => {
     const state = useLinkStore.getState();
     return state.links.some(
       (link) =>
-        link.isNew || link.Platform === "" || link.URL === "" || link.dirty
+        link.isNew ||
+        link.Platform === "" ||
+        link.URL === "" ||
+        link.dirty ||
+        link.order !== link.original?.order // Check for order changes
     );
   },
   clearLinksStore: () => set(() => ({ links: [], errors: {} })),

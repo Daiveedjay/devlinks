@@ -19,7 +19,7 @@ export default function UnsavedModal({
 }) {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="sm:max-w-[425px] text-black">
+      <DialogContent className="sm:max-w-[425px] text-foreground dark:bg-sidebar">
         <DialogHeader>
           <DialogTitle>Unsaved Changes</DialogTitle>
           <DialogDescription>
@@ -27,7 +27,10 @@ export default function UnsavedModal({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
+          <Button
+            className=" dark:hover:text-purple-light"
+            variant="ghost"
+            onClick={() => setIsDialogOpen(false)}>
             Stay Here
           </Button>
           <Button variant="destructive" onClick={handleIgnoreAndNavigate}>

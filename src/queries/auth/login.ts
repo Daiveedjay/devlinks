@@ -31,10 +31,23 @@ export const useLogin = () => {
 
   return useMutation<AuthResponse, Error, AuthPayload>({
     mutationFn: login,
-    onError: (error) => toast.error(error.message),
-
+    onError: (error) =>
+      toast(error.message, {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <ShieldAlert />,
+      }),
+    // toast.error(error.message),
+    //
     onSuccess: (data) => {
-      toast.success("Login successful!");
+      // toast.success("Login successful!");
+      toast("Login successful!", {
+        className: "success-toast",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <CircleCheck />,
+      });
       setUser(data.data as User); // Assuming 'data.data' contains user info
       router.push("/");
     },

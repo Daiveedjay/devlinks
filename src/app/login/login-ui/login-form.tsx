@@ -48,7 +48,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white p-8 shadow-sm rounded-md">
+    <div className="w-full max-w-md bg-sidebar p-8 shadow-sm rounded-md">
       <div className="flex items-center justify-center mb-16">
         <div className="rounded-lg flex items-center justify-center">
           <Logo />
@@ -68,7 +68,7 @@ export default function LoginForm() {
           type="button"
           variant="outline"
           disabled={isAuthProcessing}
-          className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
+          className="w-full border-gray-light bg-purple-light  dark:text-foreground dark:hover:bg-purple-primary"
           onClick={() => handleOAuth("google")}>
           {isAuthProcessing ? <Spinner /> : <GoogleIcon />}
           Continue with Google
@@ -77,7 +77,7 @@ export default function LoginForm() {
           type="button"
           variant="outline"
           disabled={isAuthProcessing}
-          className="w-full border-gray-light hover:bg-gray-50 text-gray-dark"
+          className="w-full border-gray-light bg-purple-light  dark:text-foreground dark:hover:bg-purple-primary"
           onClick={() => handleOAuth("github")}>
           {isAuthProcessing ? <Spinner /> : <Github className="w-5 h-5 mr-2" />}
           Continue with GitHub
@@ -90,7 +90,9 @@ export default function LoginForm() {
           <div className="w-full border-t border-gray-light"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-medium">or</span>
+          <span className="px-2 rounded-sm bg-sidebar-border text-gray-medium">
+            or
+          </span>
         </div>
       </div>
 
@@ -109,7 +111,7 @@ export default function LoginForm() {
               type="email"
               autoComplete="email"
               placeholder="e.g. alex@email.com"
-              className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
+              className="pl-10 border-gray-light focus:border-purple-primary dark:border-muted-foreground focus:ring-purple-primary"
             />
           </div>
           <ErrorText value={errors.email} />
@@ -129,7 +131,7 @@ export default function LoginForm() {
               autoComplete="current-password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className="pl-10 border-gray-light focus:border-purple-primary focus:ring-purple-primary"
+              className="pl-10 border-gray-light dark:border-muted-foreground focus:border-purple-primary focus:ring-purple-primary"
             />
             <div
               className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
@@ -149,7 +151,7 @@ export default function LoginForm() {
           // type="submit"
           disabled={!!errors.email || !!errors.password || isPending}
           onClick={handleSubmit(onSubmit)}
-          className="w-full bg-purple-primary hover:bg-purple-primary/90 text-white">
+          className="w-full bg-purple-light  dark:text-foreground dark:hover:bg-purple-primary text-foreground">
           {isPending ? <Spinner /> : "Login"}
         </Button>
       </form>

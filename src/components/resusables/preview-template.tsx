@@ -13,22 +13,26 @@ export default function PreviewTemplate({
 }) {
   const { username, bio, user_image, email, links } = user;
   return (
-    <div className=" bg-gray-background">
-      <div className=" p-8 rounded-b-3xl bg-purple-primary h-[50dvh]">
-        <div className="p-4 bg-white flex justify-between items-center rounded-md">
+    <div className=" bg-background">
+      <div className=" p-4 sm:p-8 rounded-b-3xl bg-purple-primary dark:bg-sidebar h-[50dvh]">
+        <div className="p-4 bg-white sm:dark:bg-transparent dark:bg-background flex justify-between items-center rounded-md">
           <Link href="/">
             {" "}
-            <Button variant="outline" className=" px-6 py-5">
-              Back to Editor
+            <Button
+              variant="outline"
+              className=" text-foreground px-6 border-2 gap-1 py-5 dark:bg-transparent dark:hover:bg-sidebar-primary ">
+              Back<span className="hidden sm:inline">to Editor</span>
             </Button>
           </Link>
-          <Button variant="default" className=" px-6 py-5">
-            Share link
+          <Button
+            variant="default"
+            className=" dark:bg-sidebar-primary dark:text-foreground dark:hover:bg-sidebar-primary/70 px-6 py-5">
+            Share page
           </Button>
         </div>
       </div>
       <div className=" flex justify-center">
-        <div className="w-[350px] rounded-3xl -translate-y-40 overflow-y-auto max-h-[560px] bg-white shadow-sm flex flex-col p-8 items-center">
+        <div className="w-[350px] rounded-3xl -translate-y-40 sm:overflow-y-auto h-full sm:max-h-[560px] shadow-lg dark:shadow-2xl dark:border-2 dark:border-sidebar-accent flex flex-col p-4 sm:p-8 items-center bg-background">
           <div className=" relative w-28 rounded-full min-h-28 outline-4 outline-purple-primary overflow-hidden">
             <Image
               src={user_image === "" ? "/placeholder.webp" : user_image}
@@ -40,10 +44,12 @@ export default function PreviewTemplate({
             />
           </div>
           <div>
-            <h3 className="medium__header mt-6"> @{username || "John Doe"}</h3>
+            <h3 className="medium__header  mt-6"> @{username || "John Doe"}</h3>
 
-            <p className="text-[14px] text-gray-medium  mb-[8px]">{email}</p>
-            <p className="text-[14px] text-gray-medium mb-[24px]">
+            <p className="text-[14px] dark:text-primary text-gray-medium  mb-[8px]">
+              {email}
+            </p>
+            <p className="text-[14px] dark:text-primary  text-gray-medium mb-[24px]">
               {bio || " No bio"}
             </p>
           </div>

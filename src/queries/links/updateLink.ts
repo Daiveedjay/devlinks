@@ -62,22 +62,46 @@ export const useUpdateLink = () => {
       if (context?.previousLinks) {
         setLinks(context.previousLinks);
       }
-      toast.error(
-        error.message || "Failed to update the link. Please try again."
-      );
+      // toast.error(
+      //   error.message || "Failed to update the link. Please try again."
+      // );
+
+      toast(error.message || "Failed to update the link. Please try again.", {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <ShieldAlert />,
+      });
     },
 
     onSuccess: (apiResponse, _, context) => {
       if (apiResponse.error) {
-        toast.error(
-          apiResponse.message || "An error occurred while updating the link."
+        // toast.error(
+        //   apiResponse.message || "An error occurred while updating the link."
+        // );
+
+        toast(
+          apiResponse.message || "An error occurred while updating the link.",
+          {
+            className: "error-toast ",
+            // description: "With a description and an icon",
+            duration: 2000,
+            // icon: <ShieldAlert />,
+          }
         );
         if (context?.previousLinks) {
           setLinks(context.previousLinks);
         }
         return;
       }
-      toast.success(apiResponse.message || "Link updated successfully!");
+      // toast.success(apiResponse.message || "Link updated successfully!");
+
+      toast(apiResponse.message || "Link updated successfully!", {
+        className: "success-toast",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <CircleCheck />,
+      });
     },
   });
 };

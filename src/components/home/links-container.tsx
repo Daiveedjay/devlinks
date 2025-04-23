@@ -87,7 +87,7 @@ export default function LinksContainer() {
       <Droppable droppableId="droppable-links">
         {(provided) => (
           <ul
-            className="flex-1 py-10 flex flex-col gap-10"
+            className="flex-1 py-6 sm:py-10 flex flex-col gap-6 sm:gap-10"
             {...provided.droppableProps}
             ref={provided.innerRef}>
             {links?.map((link, index) => (
@@ -99,15 +99,17 @@ export default function LinksContainer() {
                   <li
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className={`bg-gray-background dark:bg-sidebar-border p-6 border-2 rounded-[6px] ${
+                    className={`bg-gray-background dark:bg-sidebar sm:p-6 p-4 border-2 rounded-[6px] ${
                       snapshot.isDragging
                         ? " border-purple-primary"
                         : " border-transparent"
                     }`}>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-1">
+                    <div className="flex dark:text-foreground justify-between items-center">
+                      <div className="flex  items-center gap-1">
                         <Equal />
-                        <span className="font-bold">Link #{index + 1}</span>
+                        <span className="font-bold dark:text-foreground">
+                          Link #{index + 1}
+                        </span>
                       </div>
                       <div className="flex justify-center items-center gap-4">
                         <div
@@ -143,21 +145,21 @@ export default function LinksContainer() {
                       {linksToDelete.has(link.ID) && !link.isNew && (
                         <motion.div
                           {...defaultMotionConfig}
-                          className="mt-4 bg-purple-light text-white rounded-md overflow-hidden">
+                          className="mt-4 bg-purple-light dark:bg-sidebar-border text-white rounded-md overflow-hidden">
                           <div className="p-4">
                             <h3 className="text-center font-bold text-gray-dark mb-4">
                               Delete this link?
                             </h3>
-                            <div className="flex justify-between gap-2">
+                            <div className="flex flex-col sm:flex-row justify-between gap-2">
                               <Button
                                 variant="outline"
-                                className="flex-1/3 p-6"
+                                className="flex-1/3 p-3 sm:p-6"
                                 onClick={() => toggleDelete(link.ID)}>
                                 Cancel
                               </Button>
                               <Button
                                 variant="destructive"
-                                className="flex-2/3 p-6"
+                                className="flex-2/3 p-3 sm:p-6"
                                 onClick={() => deleteLinkAsync(link.ID)}>
                                 Delete
                               </Button>

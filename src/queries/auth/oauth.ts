@@ -31,12 +31,24 @@ export const useAuthCallback = () => {
     },
     onSuccess: (response) => {
       if (!response?.data) return;
-      toast.success("Login successful!");
+      // toast.success("Login successful!");
+      toast("Login successful!", {
+        className: "success-toast",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <CircleCheck />,
+      });
       setUser(response.data);
       router.push("/");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Authentication failed");
+      // toast.error(err.message || "Authentication failed");
+      toast(err.message || "Authentication failed", {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <ShieldAlert />,
+      });
     },
   });
 };

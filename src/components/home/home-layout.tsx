@@ -17,7 +17,7 @@ export default function HomeLayout({
         </div>
 
         {/* Right Side: Dynamic Content */}
-        <div className="flex-2/3 bg-background overflow-y-auto p-8">
+        <div className="flex-2/3 bg-background overflow-y-auto p-4 sm:p-8">
           {children}
         </div>
       </div>

@@ -59,14 +59,16 @@ export function PlatformSelect({
     <div className="space-y-4">
       <div className=" w-full">
         {" "}
-        <Label className="small__text pb-2 font-normal">Platform</Label>
+        <Label className="small__text dark:text-foreground pb-2 font-normal">
+          Platform
+        </Label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full text-gray-dark justify-between  border-gray-light hover:border-purple-primary focus:border-purple-primary focus:ring-2 focus:ring-purple-light h-12 px-4">
+              className="w-full dark:hover:bg-sidebar-border text-gray-dark justify-between group  border-gray-light hover:border-purple-primary focus:border-purple-primary focus:ring-2 focus:ring-purple-light dark:focus:ring-ring h-12 px-4">
               {selectedPlatform ? (
                 <div className="flex items-center gap-3">
                   <selectedPlatform.icon className="h-5 w-5" />
@@ -77,7 +79,7 @@ export function PlatformSelect({
               )}
               <ChevronDown
                 className={cn(
-                  "ml-2 h-5 w-5 shrink-0 text-purple-light transition-transform duration-200",
+                  "ml-2 h-5 w-5 dark:group-hover:text-purple-primary shrink-0 text-purple-light transition-transform duration-200",
                   open && "rotate-180"
                 )}
               />
@@ -110,7 +112,7 @@ export function PlatformSelect({
       </div>
 
       <div>
-        <Label className="pb-2 font-normal">Link</Label>
+        <Label className="pb-2 dark:text-foreground font-normal">Link</Label>
         <Input
           type="url"
           value={linkValue}
@@ -122,7 +124,7 @@ export function PlatformSelect({
           onBlur={() => validateLink(linkValue)}
           disabled={!selectedPlatform}
           className={cn(
-            "h-12 font-medium !text-gray-dark border-gray-light focus:border-purple-primary focus:ring-2 focus:ring-purple-light",
+            "h-12 font-medium !text-gray-dark dark:border-muted-foreground border-gray-light focus:border-purple-primary focus:ring-2 focus:ring-purple-light dark:focus:ring-purple-primary dark:focus:border-purple-primary",
             error &&
               "border-red-error focus:border-red-error focus:ring-red-100"
           )}

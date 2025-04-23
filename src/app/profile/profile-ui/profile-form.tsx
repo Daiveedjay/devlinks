@@ -10,6 +10,7 @@ import { profileSchema } from "@/lib/validation";
 import { useUpdateUser } from "@/queries/user/user";
 import { User, useUserStore } from "@/store/useUserStore";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ShieldAlert } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -44,7 +45,14 @@ export default function ProfileForm() {
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value.includes(" ")) {
-      toast.error("Username cannot contain spaces");
+      // toast.error("Username cannot contain spaces");
+
+      toast("Username cannot contain spaces", {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        icon: <ShieldAlert />,
+      });
       setValue("username", value.replace(/\s/g, ""), { shouldValidate: true });
       return;
     }
@@ -67,7 +75,14 @@ export default function ProfileForm() {
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     if (value.length > 200) {
-      toast.error("Bio cannot exceed 200 characters");
+      // toast.error("Bio cannot exceed 200 characters");
+
+      toast("Bio cannot exceed 200 characters", {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        icon: <ShieldAlert />,
+      });
       setValue("bio", value.slice(0, 200), { shouldValidate: true });
       return;
     }
@@ -76,7 +91,7 @@ export default function ProfileForm() {
 
   return (
     <form
-      className="w-full bg-gray-background p-8  space-y-4 "
+      className="w-full bg-gray-background dark:bg-sidebar rounded-lg p-4 sm:p-8  space-y-4 "
       onSubmit={handleSubmit(onSubmit)}>
       <div className="space-y-1 flex-col gap-1 sm:flex-row flex">
         <Label
@@ -91,11 +106,11 @@ export default function ProfileForm() {
             id="username"
             placeholder={user.username}
             defaultValue={user.username}
-            className={`border placeholder:font-normal  font-semibold flex-2/3 ${
+            className={`border dark:border-muted-foreground placeholder:font-normal font-semibold flex-2/3 ${
               focusedField === "username"
                 ? "focus:border-purple-primary focus:ring-purple-primary ring-1"
                 : "border-gray-light"
-            } rounded-md px-3 py-2 focus:outline-none`}
+            } rounded-sm px-3 py-2 focus:outline-none`}
             onFocus={() => setFocusedField("username")}
             onBlur={() => setFocusedField(null)}
             onChange={handleUsernameChange}
@@ -105,7 +120,7 @@ export default function ProfileForm() {
         </div>
       </div>
 
-      <div className="space-y-2 flex-col gap-1 sm:flex-row relative flex mt-12">
+      <div className="space-y-2 flex-col gap-1 sm:flex-row relative flex mt-8 sm:mt-12">
         <Label htmlFor="bio" className=" text-gray-medium font-normal flex-1/3">
           Bio *
         </Label>
@@ -115,11 +130,11 @@ export default function ProfileForm() {
             id="bio"
             defaultValue={watchedBio}
             onChange={handleBioChange}
-            className={`border resize-none placeholder:font-normal  font-semibold flex-2/3 ${
+            className={`border dark:border-muted-foreground resize-none placeholder:font-normal  font-semibold flex-2/3 ${
               focusedField === "bio"
                 ? "focus:border-purple-primary focus:ring-purple-primary ring-1"
                 : "border-gray-light"
-            } rounded-md px-3 py-2 focus:outline-none`}
+            } rounded-sm px-3 py-2 focus:outline-none`}
             onFocus={() => setFocusedField("bio")}
             onBlur={() => setFocusedField(null)}
           />{" "}

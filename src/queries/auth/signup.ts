@@ -31,10 +31,23 @@ export const useSignup = () => {
   return useMutation<AuthResponse, Error, AuthPayload>({
     mutationFn: signup, // Use the extracted signup
 
-    onError: (error) => toast.error(error.message),
+    onError: (error) =>
+      toast(error.message, {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <ShieldAlert />,
+      }),
+    // toast.error(error.message),
 
     onSuccess: (data) => {
-      toast("Account created successfully!");
+      // toast("Account created successfully!");
+      toast("Account created successfully!", {
+        className: "success-toast",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <CircleCheck />,
+      });
       setUser(data.data as User);
       router.push("/");
     },

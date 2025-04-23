@@ -44,17 +44,19 @@ export default function PhonePreview() {
         style={{ transform: "scale(0.91)" }} // Adjusted scale factor
       >
         <path
+          className=" stroke-1 stroke-[#737373] dark:stroke-muted-foreground"
           d="M1 54.5C1 24.9528 24.9528 1 54.5 1H253.5C283.047 1 307 24.9528 307 54.5V577.5C307 607.047 283.047 631 253.5 631H54.5C24.9528 631 1 607.047 1 577.5V54.5Z"
-          stroke="#737373"
+          // stroke="#"
         />
         <path
+          className=" stroke-1 stroke-[#737373] dark:stroke-muted-foreground"
           d="M12 55.5C12 30.9233 31.9233 11 56.5 11H80.5C86.8513 11 92 16.1487 92 22.5C92 30.5081 98.4919 37 106.5 37H201.5C209.508 37 216 30.5081 216 22.5C216 16.1487 221.149 11 227.5 11H251.5C276.077 11 296 30.9233 296 55.5V576.5C296 601.077 276.077 621 251.5 621H56.5C31.9233 621 12 601.077 12 576.5V55.5Z"
-          fill="white"
-          stroke="#737373"
+          fill="trasparent"
+          // stroke="#737373"
         />
       </svg>
       {/* Content Container */}
-      <div className="absolute h-4/5    overflow-auto top-[60px] left-[11px] right-[11px] bottom-[11px] ">
+      <div className="absolute h-4/5  overflow-auto top-[60px] left-[11px] right-[11px] bottom-[11px] ">
         <div className="flex flex-col items-center pt-[16px] px-6">
           {/* Profile Image */}
           <div className="w-[88px] h-[88px] rounded-full overflow-hidden bg-[#EEEEEE] mb-[24px]">
@@ -82,8 +84,10 @@ export default function PhonePreview() {
           </h1>
 
           {/* Profile Email */}
-          <p className="text-[14px] text-gray-medium mb-[8px]">{email}</p>
-          <p className="text-[14px] text-gray-medium mb-[24px]">
+          <p className="text-[14px] text-gray-medium dark:text-primary mb-[8px]">
+            {email}
+          </p>
+          <p className="text-[14px] text-gray-medium dark:text-primary mb-[24px]">
             {bio || " An amazing bio goes here"}
           </p>
 
@@ -129,7 +133,7 @@ export default function PhonePreview() {
               : Array.from({ length: 3 }).map((_, i) => (
                   <div
                     key={i}
-                    className="w-full h-[44px] bg-[#EEEEEE] rounded-lg"
+                    className="w-full h-[44px] bg-[#EEEEEE] dark:bg-sidebar-border rounded-lg"
                   />
                 ))}
           </div>

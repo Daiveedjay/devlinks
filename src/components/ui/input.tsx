@@ -13,6 +13,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
         "focus-visible:border-purple-primary",
         "focus:shadow-[0px_0px_5px_3.5px_var(--purple-light),0px_0px_5px_3.5px_var(--purple-light)]",
+        "dark:focus:shadow-none dark:border-muted-foreground dark:bg-transparent dark:text-foreground dark:placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground",
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         className
       )}

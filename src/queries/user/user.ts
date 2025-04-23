@@ -1,7 +1,10 @@
 import { apiEndpoint } from "@/lib/constants";
 import { User } from "@/store/useUserStore";
 import { ApiError, ApiResponse } from "../auth/types/types";
-
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useUserStore } from "@/store/useUserStore";
+import { useAuthStore } from "@/store/useAuthStore";
 const updateUser = async (
   userId: string,
   userData: Partial<User>
@@ -27,13 +30,11 @@ const updateUser = async (
   return data;
 };
 
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useUserStore } from "@/store/useUserStore";
-
 export const useUpdateUser = () => {
   const { user, updateUser: updateUserLocal } = useUserStore((store) => store);
   const userId = user?.id;
+
+  const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 
   return useMutation<
     ApiResponse<Partial<User>>, // TData
@@ -59,20 +60,42 @@ export const useUpdateUser = () => {
         if (context?.prevUserData) {
           updateUserLocal(context.prevUserData);
         }
-        toast.error(
-          apiResponse.message || "User update failed. Please try again."
-        );
+        // toast.error(
+        //   apiResponse.message || "User update failed. Please try again."
+        // );
+        toast(apiResponse.message || "User update failed. Please try again.", {
+          className: "error-toast ",
+          // description: "With a description and an icon",
+          duration: 2000,
+          // icon: <ShieldAlert />,
+        });
       } else {
-        toast.success(apiResponse.message || "User updated successfully!");
+        // toast.success(apiResponse.message || "User updated successfully!");
+        toast(apiResponse.message || "User updated successfully!", {
+          className: "success-toast",
+          // description: "With a description and an icon",
+          duration: 2000,
+          // icon: <CircleCheck />,
+        });
       }
     },
 
     onError: (error, variables, context) => {
+      if (error.status === 401) {
+        setIsUnauthorized(true);
+        return false;
+      }
       if (context?.prevUserData) {
         updateUserLocal(context.prevUserData);
       }
-      toast.error(error.message);
-      console.error("Error updating user:", error);
+      // toast.error(error.message);
+
+      toast(error.message, {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <ShieldAlert />,
+      });
     },
   });
 };

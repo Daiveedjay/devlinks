@@ -15,7 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Fullscreen } from "lucide-react";
+import { CircleCheck, Fullscreen, ShieldAlert } from "lucide-react";
 import { ApiError } from "@/queries/auth/types/types";
 import ProfileImageModal from "@/components/resusables/profile-image-modal";
 
@@ -33,14 +33,18 @@ export default function ProfileImageUploader() {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const { mutate: updateImage, isPending: isSaving } = useUpdateUserImage();
 
-  console.log("Is Pending image upload", isSaving);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be less than 5MB");
+      toast("Image must be less than 5MB", {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        icon: <ShieldAlert />,
+      });
+      // toast.error("");
       e.target.value = "";
       return;
     }
@@ -67,15 +71,36 @@ export default function ProfileImageUploader() {
       onSuccess: (response) => {
         console.log("Image response", response);
         if (!response.data) {
-          toast.error(
-            "Image update failed. The server did not return a valid URL. Please try again or contact support."
+          // toast.error(
+          //   "Image update failed. The server did not return a valid URL. Please try again or contact support."
+          // );
+
+          toast(
+            "Image update failed. The server did not return a valid URL. Please try again or contact support.",
+            {
+              className: "error-toast ",
+              // description: "With a description and an icon",
+              duration: 2000,
+              icon: <ShieldAlert />,
+            }
           );
+          // toast("A Sonner toast", {
+          //   className: "my-classname",
+          //   // description: "With a description and an icon",
+          //   duration: 2000,
+          //   icon: <ShieldAlert />,
+          // });
           setPreviewImage(originalImage);
           setUnsavedChange(false);
           return;
         }
 
-        toast.success("Image updated successfully!");
+        toast("Image updated successfully!", {
+          className: "success-toast",
+          // description: "With a description and an icon",
+          duration: 2000,
+          icon: <CircleCheck />,
+        });
         setOriginalImage(previewImage);
 
         updateUser({ user_image: response.data });
@@ -93,10 +118,10 @@ export default function ProfileImageUploader() {
   return (
     <>
       {" "}
-      <div className="bg-gray-background mt-16 mb-8 p-8 rounded-[12px]">
+      <div className="bg-gray-background dark:bg-sidebar mt-10 sm:mt-16 mb-8 sm:p-8 p-4 rounded-[12px]">
         <div className="flex flex-col lg:flex-row items-start gap-4 lg:gap-0 lg:items-center">
           <p className="medium__text flex-1/3">Profile Picture</p>
-          <div className="flex-1 lg:flex-2/3 gap-14 flex flex-col lg:flex-row items-start lg:items-center lg:gap-4">
+          <div className="flex-1 lg:flex-2/3 w-full gap-14 flex flex-col lg:flex-row items-start lg:items-center lg:gap-4">
             <div className="relative aspect-square w-full lg:max-w-[240px] border-2 rounded-lg">
               {!selectedFile ? (
                 <>

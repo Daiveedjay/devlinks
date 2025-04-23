@@ -35,7 +35,13 @@ export const useLogout = () => {
     onSuccess: () => {
       router.push("/login");
 
-      toast.success("Logout successful!");
+      // toast.success("Logout successful!");
+      toast("Logout successful!", {
+        className: "success-toast",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <CircleCheck />,
+      });
       clearUser();
       clearLinksStore();
       clearAuth();
@@ -43,7 +49,13 @@ export const useLogout = () => {
       // Redirect to the login page
     },
     onError: (error) => {
-      toast.error(error.message || "Logout failed");
+      // toast.error(error.message || "Logout failed");
+      toast(error.message || "Logout failed", {
+        className: "error-toast ",
+        // description: "With a description and an icon",
+        duration: 2000,
+        // icon: <ShieldAlert />,
+      });
     },
   });
 };

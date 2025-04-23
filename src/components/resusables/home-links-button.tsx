@@ -8,7 +8,9 @@ export const HomeLinksButton = () => {
     <Link href="/">
       <Button
         variant={currentPath === "/" ? "active" : "ghost"}
-        className=" dark:text-foreground w-32 xl:w-40 flex items-center justify-center !py-6">
+        className={`dark:text-foreground w-32 xl:w-40 flex items-center justify-center !py-6 ${
+          currentPath !== "/" && "dark:hover:text-sidebar-primary"
+        }`}>
         <IconLink
           className={`h-5 w-5 ${
             currentPath === "/"
