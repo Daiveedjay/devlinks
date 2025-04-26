@@ -1,4 +1,4 @@
-import { apiEndpoint } from "@/lib/constants";
+import { apiEndpoint, TOAST_TIMEOUT } from "@/lib/constants";
 import { User } from "@/store/useUserStore";
 import { ApiError, ApiResponse } from "../auth/types/types";
 import { useMutation } from "@tanstack/react-query";
@@ -66,7 +66,7 @@ export const useUpdateUser = () => {
         toast(apiResponse.message || "User update failed. Please try again.", {
           className: "error-toast ",
           // description: "With a description and an icon",
-          duration: 2000,
+          duration: TOAST_TIMEOUT,
           // icon: <ShieldAlert />,
         });
       } else {
@@ -74,7 +74,7 @@ export const useUpdateUser = () => {
         toast(apiResponse.message || "User updated successfully!", {
           className: "success-toast",
           // description: "With a description and an icon",
-          duration: 2000,
+          duration: TOAST_TIMEOUT,
           // icon: <CircleCheck />,
         });
       }
@@ -93,7 +93,7 @@ export const useUpdateUser = () => {
       toast(error.message, {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <ShieldAlert />,
       });
     },

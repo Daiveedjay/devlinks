@@ -1,4 +1,4 @@
-import { apiEndpoint } from "@/lib/constants";
+import { apiEndpoint, TOAST_TIMEOUT } from "@/lib/constants";
 import { AuthPayload, AuthResponse } from "./types/types";
 
 import { useRouter } from "next/navigation";
@@ -35,7 +35,7 @@ export const useLogin = () => {
       toast(error.message, {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <ShieldAlert />,
       }),
     // toast.error(error.message),
@@ -45,7 +45,7 @@ export const useLogin = () => {
       toast("Login successful!", {
         className: "success-toast",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <CircleCheck />,
       });
       setUser(data.data as User); // Assuming 'data.data' contains user info

@@ -4,6 +4,11 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("auth-token")?.value;
 
+  // Allow public access to user profile pages that start with @
+  if (pathname.startsWith("/@")) {
+    return NextResponse.next();
+  }
+
   // For /login and /signup routes:
   if (pathname.startsWith("/login") || pathname.startsWith("/signup")) {
     if (token) {

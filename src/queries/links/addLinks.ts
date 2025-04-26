@@ -1,4 +1,4 @@
-import { apiEndpoint } from "@/lib/constants";
+import { apiEndpoint, TOAST_TIMEOUT } from "@/lib/constants";
 import { Link } from "@/store/useLinkStore";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -81,7 +81,7 @@ export const useAddLink = () => {
       toast(apiResponse.message || "Links added successfully!", {
         className: "success-toast",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <CircleCheck />,
       });
     },
@@ -96,7 +96,7 @@ export const useAddLink = () => {
       toast(error.message, {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <ShieldAlert />,
       });
       if (context?.previousLinks) {

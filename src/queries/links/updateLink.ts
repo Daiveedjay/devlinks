@@ -4,7 +4,7 @@ import { useLinkStore } from "@/store/useLinkStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
 import { ApiError, ApiResponse } from "../auth/types/types";
-import { apiEndpoint } from "@/lib/constants";
+import { apiEndpoint, TOAST_TIMEOUT } from "@/lib/constants";
 import { Link } from "@/store/useLinkStore";
 
 const updateLink = async (
@@ -69,7 +69,7 @@ export const useUpdateLink = () => {
       toast(error.message || "Failed to update the link. Please try again.", {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <ShieldAlert />,
       });
     },
@@ -85,7 +85,7 @@ export const useUpdateLink = () => {
           {
             className: "error-toast ",
             // description: "With a description and an icon",
-            duration: 2000,
+            duration: TOAST_TIMEOUT,
             // icon: <ShieldAlert />,
           }
         );
@@ -99,7 +99,7 @@ export const useUpdateLink = () => {
       toast(apiResponse.message || "Link updated successfully!", {
         className: "success-toast",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <CircleCheck />,
       });
     },

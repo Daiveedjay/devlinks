@@ -1,6 +1,6 @@
 import { apiEndpoint } from "@/lib/constants";
 
-import PreviewTemplate from "@/components/resusables/preview-template";
+import PreviewTemplate from "@/components/preview/preview-template";
 import { Link as LinkType } from "@/store/useLinkStore";
 import NotFound from "./not-found";
 import { Metadata } from "next";
@@ -42,7 +42,6 @@ export default async function Page({
   const data = await response.json();
 
   const userData: UserProfileResponse = data.data;
-  console.log(data, "data in profile page");
 
   return <PreviewTemplate user={{ ...userData, id: userData.id.toString() }} />;
 }

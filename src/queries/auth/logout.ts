@@ -1,4 +1,4 @@
-import { apiEndpoint } from "@/lib/constants";
+import { apiEndpoint, TOAST_TIMEOUT } from "@/lib/constants";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useLinkStore } from "@/store/useLinkStore";
 import { useUserStore } from "@/store/useUserStore";
@@ -39,7 +39,7 @@ export const useLogout = () => {
       toast("Logout successful!", {
         className: "success-toast",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <CircleCheck />,
       });
       clearUser();
@@ -53,7 +53,7 @@ export const useLogout = () => {
       toast(error.message || "Logout failed", {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <ShieldAlert />,
       });
     },

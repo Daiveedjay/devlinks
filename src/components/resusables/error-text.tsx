@@ -7,7 +7,7 @@ export default function ErrorText({ value }: { value?: { message?: string } }) {
       {value?.message && ( // ✅ Check if message exists before rendering
         <motion.div
           {...defaultMotionConfig}
-          className="text-destructive text-sm overflow-hidden">
+          className="text-destructive dark:text-chart-5 text-sm overflow-hidden">
           {value.message}
         </motion.div>
       )}

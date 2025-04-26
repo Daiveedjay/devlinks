@@ -33,7 +33,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange>
           <QueryProvider>
-            {children}
+            <main className=" max-w-[1600px] mx-auto"> {children}</main>
             <Toaster position="top-right" />
             <UnauthorizedModal />
           </QueryProvider>

@@ -5,11 +5,19 @@ import { HAMBURGER_VARIANTS } from "@/lib/constants";
 import { useClickOutside } from "@/lib/hooks";
 import { useLogout } from "@/queries/auth/logout";
 import { useLinkStore } from "@/store/useLinkStore";
+import { useUserStore } from "@/store/useUserStore";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
-import { CircleUserRound, LinkIcon, LogOut, View } from "lucide-react";
+import {
+  CircleUserRound,
+  LinkIcon,
+  LogOut,
+  ShieldAlert,
+  View,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 import UnsavedModal from "./unsaved-modal";
 
 export default function HamburgerMenu() {
@@ -25,8 +33,22 @@ export default function HamburgerMenu() {
     useLinkStore((store) => store);
   const logout = useLogout();
 
+  const user = useUserStore((store) => store.user);
+
   // Intercept navigation
   const handleNavigation = (event: React.MouseEvent, path: string) => {
+    if (path === "/preview" && user.username === "") {
+      toast(
+        "You must have a unique username before previewing your profile, head over to the profile section to set one now.",
+        {
+          className: "error-toast ",
+          // description: "With a description and an icon",
+          duration: 5000,
+          icon: <ShieldAlert />,
+        }
+      );
+      return;
+    }
     if (hasUnsavedChanges()) {
       event.preventDefault(); // Prevent routing
       setPendingRoute(path); // Store the path

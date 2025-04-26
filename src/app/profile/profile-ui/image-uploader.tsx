@@ -18,6 +18,7 @@ import {
 import { CircleCheck, Fullscreen, ShieldAlert } from "lucide-react";
 import { ApiError } from "@/queries/auth/types/types";
 import ProfileImageModal from "@/components/resusables/profile-image-modal";
+import { TOAST_TIMEOUT } from "@/lib/constants";
 
 export default function ProfileImageUploader() {
   const { user, updateUser } = useUserStore((store) => store);
@@ -41,7 +42,7 @@ export default function ProfileImageUploader() {
       toast("Image must be less than 5MB", {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         icon: <ShieldAlert />,
       });
       // toast.error("");
@@ -80,7 +81,7 @@ export default function ProfileImageUploader() {
             {
               className: "error-toast ",
               // description: "With a description and an icon",
-              duration: 2000,
+              duration: TOAST_TIMEOUT,
               icon: <ShieldAlert />,
             }
           );
@@ -98,7 +99,7 @@ export default function ProfileImageUploader() {
         toast("Image updated successfully!", {
           className: "success-toast",
           // description: "With a description and an icon",
-          duration: 2000,
+          duration: TOAST_TIMEOUT,
           icon: <CircleCheck />,
         });
         setOriginalImage(previewImage);

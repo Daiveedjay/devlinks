@@ -1,5 +1,5 @@
 "use client";
-import PreviewTemplate from "@/components/resusables/preview-template";
+import PreviewTemplate from "@/components/preview/preview-template";
 import { useLinkStore } from "@/store/useLinkStore";
 import { useUserStore } from "@/store/useUserStore";
 

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { TOAST_TIMEOUT } from "@/lib/constants";
 import { profileSchema } from "@/lib/validation";
 import { useUpdateUser } from "@/queries/user/user";
 import { User, useUserStore } from "@/store/useUserStore";
@@ -50,7 +51,7 @@ export default function ProfileForm() {
       toast("Username cannot contain spaces", {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         icon: <ShieldAlert />,
       });
       setValue("username", value.replace(/\s/g, ""), { shouldValidate: true });
@@ -80,7 +81,7 @@ export default function ProfileForm() {
       toast("Bio cannot exceed 200 characters", {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         icon: <ShieldAlert />,
       });
       setValue("bio", value.slice(0, 200), { shouldValidate: true });

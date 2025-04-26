@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useLinkStore } from "@/store/useLinkStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUserStore } from "@/store/useUserStore";
-import { apiEndpoint } from "@/lib/constants";
+import { apiEndpoint, TOAST_TIMEOUT } from "@/lib/constants";
 
 const deleteLink = async (id: number): Promise<ApiResponse> => {
   const response = await fetch(`${apiEndpoint}/links/${id}`, {
@@ -66,7 +66,7 @@ export const useDeleteLink = () => {
         {
           className: "error-toast ",
           // description: "With a description and an icon",
-          duration: 2000,
+          duration: TOAST_TIMEOUT,
           // icon: <ShieldAlert />,
         }
       );
@@ -80,7 +80,7 @@ export const useDeleteLink = () => {
         toast(apiResponse.message || "An error occurred. Please try again.", {
           className: "error-toast ",
           // description: "With a description and an icon",
-          duration: 2000,
+          duration: TOAST_TIMEOUT,
           // icon: <ShieldAlert />,
         });
         if (context?.previousLinks) {
@@ -93,7 +93,7 @@ export const useDeleteLink = () => {
       toast(apiResponse.message || "Link deleted successfully!", {
         className: "success-toast",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <CircleCheck />,
       });
     },

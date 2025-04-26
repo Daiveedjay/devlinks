@@ -12,6 +12,10 @@ import { PreviewButton } from "./preview-button";
 import { ProfileButton } from "./profile-button";
 import UnsavedModal from "./unsaved-modal";
 import { ThemeToggle } from "./theme-toggle";
+import { useUserStore } from "@/store/useUserStore";
+import { ShieldAlert } from "lucide-react";
+import { toast } from "sonner";
+import { TOAST_TIMEOUT } from "@/lib/constants";
 
 export default function Navbar() {
   const router = useRouter();
@@ -20,6 +24,8 @@ export default function Navbar() {
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+
+  const user = useUserStore((store) => store.user);
 
   const logout = useLogout();
 
@@ -30,6 +36,19 @@ export default function Navbar() {
 
   // Intercept navigation
   const handleNavigation = (event: React.MouseEvent, path: string) => {
+    if (path === "/preview" && user.username === "") {
+      toast(
+        "You must have a unique username before previewing your profile, head over to the profile section to set one now.",
+        {
+          className: "error-toast ",
+          // description: "With a description and an icon",
+          duration: TOAST_TIMEOUT,
+          icon: <ShieldAlert />,
+        }
+      );
+      return;
+    }
+
     if (hasUnsavedChanges()) {
       event.preventDefault(); // Prevent routing
       setPendingRoute(path); // Store the path

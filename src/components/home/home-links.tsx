@@ -13,6 +13,7 @@ import Spinner from "../resusables/spinner";
 import { Skeleton } from "../ui/skeleton";
 import LinksContainer from "./links-container";
 import NoLinks from "./no-links";
+import { TOAST_TIMEOUT } from "@/lib/constants";
 
 export default function HomeLinks() {
   const { mutate } = useAuthCallback();
@@ -60,7 +61,7 @@ export default function HomeLinks() {
             toast("A Sonner toast", {
               className: "success-toast",
               // description: "With a description and an icon",
-              duration: 2000,
+              duration: TOAST_TIMEOUT,
               icon: <CircleCheck />,
             });
           }}>

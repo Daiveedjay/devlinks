@@ -125,3 +125,5 @@ export const HAMBURGER_VARIANTS = {
     },
   },
 };
+
+export const TOAST_TIMEOUT = 2000; // 2 seconds

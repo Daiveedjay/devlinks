@@ -18,9 +18,9 @@ export function ThemeToggle() {
   }, []);
 
   const toggleTheme = () => {
-    if (animating) return;
+    // if (animating) return;
 
-    setAnimating(true);
+    // setAnimating(true);
 
     // Get the position of the toggle button for the animation origin
     if (toggleRef.current) {
@@ -36,9 +36,9 @@ export function ThemeToggle() {
     setTheme(newTheme);
 
     // Reset animating state after animation completes
-    setTimeout(() => {
-      setAnimating(false);
-    }, 1500);
+    // setTimeout(() => {
+    //   setAnimating(false);
+    // }, 500);
   };
 
   if (!mounted) return null;
@@ -48,7 +48,7 @@ export function ThemeToggle() {
   return (
     <div className="relative">
       {/* Background overlay - positioned BELOW content */}
-      <AnimatePresence initial={false}>
+      {/* <AnimatePresence initial={false}>
         {animating && (
           <motion.div
             className="fixed inset-0 z-50 overflow-hidden pointer-events-none"
@@ -78,7 +78,7 @@ export function ThemeToggle() {
             />
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
 
       {/* Toggle button - positioned ABOVE overlay */}
       <button
@@ -86,7 +86,8 @@ export function ThemeToggle() {
         onClick={toggleTheme}
         className="relative cursor-pointer z-10 rounded-full bg-white p-2 shadow-md dark:bg-gray-800"
         aria-label="Toggle theme"
-        disabled={animating}>
+        // disabled={animating}
+      >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={theme}

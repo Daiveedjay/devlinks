@@ -1,4 +1,4 @@
-import { apiEndpoint } from "@/lib/constants";
+import { apiEndpoint, TOAST_TIMEOUT } from "@/lib/constants";
 import { User, useUserStore } from "@/store/useUserStore";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -35,7 +35,7 @@ export const useAuthCallback = () => {
       toast("Login successful!", {
         className: "success-toast",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <CircleCheck />,
       });
       setUser(response.data);
@@ -46,7 +46,7 @@ export const useAuthCallback = () => {
       toast(err.message || "Authentication failed", {
         className: "error-toast ",
         // description: "With a description and an icon",
-        duration: 2000,
+        duration: TOAST_TIMEOUT,
         // icon: <ShieldAlert />,
       });
     },

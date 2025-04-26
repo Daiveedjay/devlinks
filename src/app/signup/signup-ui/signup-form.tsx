@@ -49,7 +49,7 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="w-full max-w-md bg-sidebar p-8 shadow-sm rounded-md">
+    <div className="w-full max-w-md bg-sidebar p-4 sm:p-8 shadow-sm rounded-md">
       <div className="flex items-center justify-center mb-16">
         <Logo />
       </div>
@@ -58,7 +58,7 @@ export default function SignupForm() {
         <h1 className="text-3xl font-bold text-gray-dark mb-2">
           Create account
         </h1>
-        <p className="text-gray-medium">
+        <p className="text-gray-medium dark:text-foreground">
           Let&apos;s get you started sharing your links!
         </p>
       </div>
@@ -68,19 +68,23 @@ export default function SignupForm() {
         <Button
           type="button"
           variant="outline"
-          disabled={isAuthProcessing}
+          disabled={isAuthProcessing || isPending}
           className="w-full border-gray-light bg-purple-light  dark:text-foreground dark:hover:bg-purple-primary"
           onClick={() => handleOAuth("google")}>
-          {isAuthProcessing ? <Spinner /> : <GoogleIcon />}
+          {isAuthProcessing || isPending ? <Spinner /> : <GoogleIcon />}
           Continue with Google
         </Button>
         <Button
           type="button"
           variant="outline"
-          disabled={isAuthProcessing}
+          disabled={isAuthProcessing || isPending}
           className="w-full border-gray-light bg-purple-light  dark:text-foreground dark:hover:bg-purple-primary"
           onClick={() => handleOAuth("github")}>
-          {isAuthProcessing ? <Spinner /> : <Github className="w-5 h-5 mr-2" />}
+          {isAuthProcessing || isPending ? (
+            <Spinner />
+          ) : (
+            <Github className="w-5 h-5 mr-2" />
+          )}
           Continue with GitHub
         </Button>
       </div>
@@ -176,7 +180,7 @@ export default function SignupForm() {
           </div>
           <ErrorText value={errors.confirmPassword} />
           {!errors.confirmPassword && (
-            <p className="text-sm text-gray-medium mt-1">
+            <p className="text-sm text-gray-medium mt-1 dark:text-chart-5">
               Password must contain at least 8 characters
             </p>
           )}
@@ -188,16 +192,21 @@ export default function SignupForm() {
             !!errors.email ||
             !!errors.password ||
             !!errors.confirmPassword ||
-            isPending
+            isPending ||
+            isAuthProcessing
           }
           onClick={handleSubmit(onSubmit)}
           className="w-full bg-purple-light  dark:text-foreground dark:hover:bg-purple-primary text-foreground">
-          {isPending ? <Spinner /> : "   Create new account"}
+          {isAuthProcessing || isPending ? (
+            <Spinner />
+          ) : (
+            "   Create new account"
+          )}
         </Button>
       </form>
 
       <div className="text-center mt-6">
-        <p className="text-gray-medium">
+        <p className="text-gray-medium dark:text-foreground">
           Already have an account?
           <Link href="/login" className="text-purple-primary font-medium ml-1">
             Login
