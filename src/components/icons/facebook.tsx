@@ -2,7 +2,7 @@ export default function Facebook() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="h-12 w-12"
+      className="sm:h-12 w-8 h-8 sm:w-12"
       data-testid="ShareIcon-facebook"
       // shape="circle"
     >

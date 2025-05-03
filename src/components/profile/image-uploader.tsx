@@ -21,13 +21,11 @@ import ProfileImageModal from "@/components/resusables/profile-image-modal";
 import { TOAST_TIMEOUT } from "@/lib/constants";
 
 export default function ProfileImageUploader() {
-  const { user, updateUser } = useUserStore((store) => store);
-  const [originalImage, setOriginalImage] = useState(
-    user.user_image || "/placeholder.webp"
-  );
-  const [previewImage, setPreviewImage] = useState(
-    user.user_image || "/placeholder.webp"
-  );
+  const updateUser = useUserStore((store) => store.updateUser);
+
+  const { user_image, username } = useUserStore((store) => store.user);
+  const [originalImage, setOriginalImage] = useState(user_image);
+  const [previewImage, setPreviewImage] = useState(user_image);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [unsavedChange, setUnsavedChange] = useState(false);
@@ -127,7 +125,7 @@ export default function ProfileImageUploader() {
               {!selectedFile ? (
                 <>
                   <Image
-                    src={originalImage}
+                    src={originalImage || user_image}
                     fill
                     sizes="100%"
                     alt="Avatar"
@@ -153,7 +151,7 @@ export default function ProfileImageUploader() {
                 </>
               ) : (
                 <ImagePreview
-                  previewImage={previewImage}
+                  previewImage={previewImage || user_image}
                   onRemove={() => {
                     setSelectedFile(null);
                     setUnsavedChange(false);
@@ -180,8 +178,8 @@ export default function ProfileImageUploader() {
       <ProfileImageModal
         isOpen={isImageModalOpen}
         setIsOpen={setIsImageModalOpen}
-        imageUrl={user.user_image}
-        username={user.username}
+        imageUrl={user_image}
+        username={username}
       />
     </>
   );

@@ -16,7 +16,7 @@ export default function QueryProvider({
             staleTime: 30 * 60 * 1000, // 30 minutes
             refetchInterval: 30 * 60 * 1000, // 30 minutes
             refetchOnWindowFocus: false, // Prevent refetch on window focus
-            retry: 2, // Number of retries on failure
+            retry: 3, // Number of retries on failure
           },
         },
       })

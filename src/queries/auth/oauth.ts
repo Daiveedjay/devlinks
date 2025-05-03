@@ -16,8 +16,6 @@ export const useAuthCallback = () => {
 
       if (!token) return;
 
-      // Cookies.set("auth-token", token, { expires: 7, secure: true });
-
       const res = await fetch(`${apiEndpoint}/me`, {
         credentials: "include",
       });

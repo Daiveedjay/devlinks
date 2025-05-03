@@ -2,7 +2,7 @@ export default function X() {
   return (
     <svg
       viewBox="0 0 48 48"
-      className="h-12 w-12"
+      className="sm:h-12 w-8 h-8 sm:w-12"
       data-testid="ShareIcon-x"
       //   shape="circle"
     >

@@ -22,7 +22,7 @@ type ShareOption = {
 
 export default function ShareLinksCarousel({ username }: { username: string }) {
   // build your URL on the fly
-  const url = `https://devlinks.dev/@${username}`; // replace with your dynamic URL
+  const url = `https://devlinks.dev/@${username}`;
 
   const encoded = encodeURIComponent(url);
 
@@ -104,11 +104,11 @@ export default function ShareLinksCarousel({ username }: { username: string }) {
   ];
 
   return (
-    <div className="flex gap-6 pt-2 pb-6">
+    <div className="sm:flex grid grid-cols-4 gap-2 sm:gap-6 pt-2 sm:pb-6">
       {items.map((opt, i) => {
         const content = (
           <div className="flex cursor-pointer flex-col items-center group gap-2">
-            <div className="bg-neutral-200 flex h-12 w-12 items-center justify-center rounded-full">
+            <div className="bg-neutral-200 flex w-8 h-8 sm:h-12 sm:w-12 items-center justify-center rounded-full">
               {opt.icon}
             </div>
             <span className="text-[12px] group-hover:text-foreground font-medium">

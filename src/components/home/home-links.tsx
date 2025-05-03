@@ -4,16 +4,12 @@ import { Button } from "../ui/button";
 
 import { useAuthCallback } from "@/queries/auth/oauth";
 import { useAddLink } from "@/queries/links/addLinks";
-import { useFetchLinks } from "@/queries/links/getLinks";
 import { useLinkStore } from "@/store/useLinkStore";
-import { CircleCheck } from "lucide-react";
 import { useEffect } from "react";
-import { toast } from "sonner";
 import Spinner from "../resusables/spinner";
 import { Skeleton } from "../ui/skeleton";
 import LinksContainer from "./links-container";
 import NoLinks from "./no-links";
-import { TOAST_TIMEOUT } from "@/lib/constants";
 
 export default function HomeLinks() {
   const { mutate } = useAuthCallback();
@@ -24,10 +20,6 @@ export default function HomeLinks() {
   }, [mutate]);
 
   const { links, addLink, errors } = useLinkStore((store) => store);
-  console.log("Links", links);
-
-  const { data } = useFetchLinks();
-  console.log("Fetched Links from homelinks comp", data);
 
   const hasErrors = Object.values(errors).some((error) => error !== null);
 
@@ -54,19 +46,12 @@ export default function HomeLinks() {
           Add/edit/remove links below and then share all your profiles with the
           world!
         </p>
-        <Button
+        {/* <Button
           variant="outline"
           className="w-full p-6"
-          onClick={() => {
-            toast("A Sonner toast", {
-              className: "success-toast",
-              // description: "With a description and an icon",
-              duration: TOAST_TIMEOUT,
-              icon: <CircleCheck />,
-            });
-          }}>
+          onClick={() => console.log("Clicked links state", links)}>
           Fetch
-        </Button>
+        </Button> */}
         <Button variant="outline" className="w-full p-6" onClick={addLink}>
           Add new link
         </Button>

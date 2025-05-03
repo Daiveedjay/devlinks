@@ -23,6 +23,7 @@ interface LinkStore {
   updateLink: (id: number, updatedData: Partial<Link>) => void;
   removeLink: (id: number) => void;
   setLinks: (links: Link[]) => void;
+  setDNDLinks: (links: Link[]) => void; // For drag and drop
   // setPreviewLinks: (links: Link[]) => void;
   // For marking a link as saved (for both POST and PUT)
   markLinkAsSaved: (id: number) => void;
@@ -34,6 +35,8 @@ interface LinkStore {
   hasUnsavedChanges: () => boolean;
 
   revertUnsavedChanges: () => void;
+
+  updateOriginalOrders: () => void; // Add new function
 }
 
 export const useLinkStore = create<LinkStore>((set) => ({
@@ -78,11 +81,11 @@ export const useLinkStore = create<LinkStore>((set) => ({
 
       // For existing links (isNew is false or undefined), check if modified.
       // New links will always be saved in bulk so we don’t need an individual save button.
-      const newDirty =
+      const isDirty =
         !link.isNew &&
         (newLinkData.Platform !== link.original?.Platform ||
-          newLinkData.URL !== link.original?.URL);
-
+          newLinkData.URL !== link.original?.URL ||
+          newLinkData.order !== link.original?.order);
       // Validate the updated link data.
       const result = socialMediaSchema.safeParse(newLinkData);
       const newError = result.success
@@ -91,7 +94,7 @@ export const useLinkStore = create<LinkStore>((set) => ({
 
       return {
         links: state.links.map((l) =>
-          l.ID === id ? { ...newLinkData, dirty: newDirty } : l
+          l.ID === id ? { ...newLinkData, dirty: isDirty } : l
         ),
         errors: { ...state.errors, [id]: newError },
       };
@@ -124,7 +127,7 @@ export const useLinkStore = create<LinkStore>((set) => ({
           original: existingLink?.original ?? {
             Platform: link.Platform,
             URL: link.URL,
-            order: link.order ?? 0,
+            order: link.order ?? 0, // Ensure we keep the original order
           },
         };
       });
@@ -133,6 +136,12 @@ export const useLinkStore = create<LinkStore>((set) => ({
         errors: newErrors,
       };
     }),
+
+  setDNDLinks: (links) =>
+    set((state) => ({
+      links,
+      errors: state.errors,
+    })),
 
   markLinkAsSaved: (id) =>
     set((state) => ({
@@ -145,13 +154,12 @@ export const useLinkStore = create<LinkStore>((set) => ({
               original: {
                 Platform: l.Platform,
                 URL: l.URL,
-                order: l.order, // Store the new order
+                order: l.order, // Save current order as original
               },
             }
           : l
       ),
     })),
-
   // Remove links that are new and haven't been filled in (both Platform and URL are empty)
   cleanupEmptyLinks: () => {
     set((state) => ({
@@ -163,6 +171,21 @@ export const useLinkStore = create<LinkStore>((set) => ({
       ),
     }));
   },
+
+  // Add new function to update all original orders
+  updateOriginalOrders: () =>
+    set((state) => ({
+      links: state.links.map((link) => ({
+        ...link,
+        dirty: false,
+        original: {
+          ...link.original,
+          Platform: link.Platform,
+          URL: link.URL,
+          order: link.order,
+        },
+      })),
+    })),
 
   revertUnsavedChanges: () =>
     set((state) => {
@@ -201,7 +224,9 @@ export const useLinkStore = create<LinkStore>((set) => ({
         link.Platform === "" ||
         link.URL === "" ||
         link.dirty ||
-        link.order !== link.original?.order // Check for order changes
+        link.order !== link.original?.order ||
+        link.Platform !== link.original?.Platform ||
+        link.URL !== link.original?.URL
     );
   },
   clearLinksStore: () => set(() => ({ links: [], errors: {} })),

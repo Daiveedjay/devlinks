@@ -48,14 +48,15 @@ export default function PreviewTemplate({
                   alt="Profile"
                   height={112}
                   width={112}
+                  className="object-cover"
+                  sizes="100%"
                 />
                 <AvatarFallback>{username}</AvatarFallback>
               </Avatar>
             </div>
             <div>
-              <h3 className="medium__header  mt-6">
-                {" "}
-                @{username || "John Doe"}
+              <h3 className="medium__header  mt-6 break-words max-w-[75%]">
+                @{username}
               </h3>
 
               <p className="text-[14px] dark:text-primary text-gray-medium  mb-[8px]">

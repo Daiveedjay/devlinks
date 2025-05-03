@@ -25,12 +25,10 @@ export default function ShareLinksModal({
 }) {
   const { user_image, username } = user;
 
-  console.log(user_image, "user image in share links modal");
-
   return (
     <div className="flex fixed min-h-screen items-center justify-center bg-gray-800 p-4">
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md p-0 overflow-hidden bg-background">
+        <DialogContent className="max-w-[90%] sm:max-w-md p-0 overflow-hidden bg-background">
           <DialogHeader className="p-4 pb-0 flex justify-between items-center">
             <DialogTitle className="text-center w-full font-medium text-foreground">
               Share Devlinks
@@ -52,6 +50,8 @@ export default function ShareLinksModal({
                 alt="Profile"
                 height={96}
                 width={96}
+                className="object-cover"
+                sizes="100%"
               />
               <AvatarFallback>{username}</AvatarFallback>
             </Avatar>
@@ -64,7 +64,7 @@ export default function ShareLinksModal({
             <ShareLinksCarousel username={username} />
           </div>
 
-          <div className="p-4 border-t mt-2">
+          <div className="p-4 border-t sm:mt-2">
             <h3 className="font-medium text-foreground text-md">
               Join {username} on Devlinks
             </h3>

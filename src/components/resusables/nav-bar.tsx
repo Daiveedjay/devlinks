@@ -29,11 +29,6 @@ export default function Navbar() {
 
   const logout = useLogout();
 
-  // const hasUnsavedChanges = links.some(
-  //   (link) =>
-  //     link.isNew || link.Platform === "" || link.URL === "" || link.dirty
-  // );
-
   // Intercept navigation
   const handleNavigation = (event: React.MouseEvent, path: string) => {
     if (path === "/preview" && user.username === "") {

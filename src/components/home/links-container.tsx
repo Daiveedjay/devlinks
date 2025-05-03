@@ -54,28 +54,25 @@ export default function LinksContainer() {
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-
     const { source, destination } = result;
 
     if (source.index === destination.index) return;
 
-    // Create a copy of the current links array
     const newLinks = Array.from(links);
-    // Remove the dragged item from the array
     const [reorderedItem] = newLinks.splice(source.index, 1);
-    // Insert it at the new position
     newLinks.splice(destination.index, 0, reorderedItem);
 
-    // Only mark links as dirty if their order actually changed
+    // Only mark links whose order actually changed as dirty
     const updatedLinks = newLinks.map((link, index) => {
       const newOrder = index + 1;
       const originalOrder = links.find((l) => l.ID === link.ID)?.order;
+      const orderChanged = originalOrder !== newOrder;
 
       return {
         ...link,
         order: newOrder,
-        // Only mark as dirty if this link's order changed
-        dirty: originalOrder !== newOrder ? true : link.dirty,
+        // Only mark as dirty if this specific link's order changed
+        dirty: orderChanged ? true : link.dirty,
       };
     });
 

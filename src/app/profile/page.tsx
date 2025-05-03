@@ -1,7 +1,7 @@
 import HomeLayout from "@/components/home/home-layout";
 
-import ProfileForm from "./profile-ui/profile-form";
-import ProfileImageUploader from "./profile-ui/image-uploader";
+import ProfileForm from "../../components/profile/profile-form";
+import ProfileImageUploader from "../../components/profile/image-uploader";
 
 export default function ProfilePage() {
   return (

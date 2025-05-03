@@ -33,7 +33,7 @@ const updateLink = async (
 };
 
 export const useUpdateLink = () => {
-  const { links, setLinks } = useLinkStore((store) => store);
+  const { links, setLinks, setDNDLinks } = useLinkStore((store) => store);
   const user = useUserStore((store) => store.user);
   const userId = user?.id;
   const queryClient = useQueryClient();
@@ -49,9 +49,22 @@ export const useUpdateLink = () => {
 
       // Optimistically update the link.
       const optimisticLinks = previousLinks.map((link) =>
-        link.ID === data.id ? { ...link, ...data.link, dirty: false } : link
+        link.ID === data.id
+          ? {
+              ...link,
+              ...data.link,
+              dirty: false,
+              original: {
+                ...link.original,
+                Platform: data.link.Platform ?? link.Platform,
+                URL: data.link.URL ?? link.URL,
+                order: data.link.order ?? link.order,
+              },
+            }
+          : link
       );
-      setLinks(optimisticLinks);
+
+      setDNDLinks(optimisticLinks);
       return { previousLinks };
     },
 
@@ -62,19 +75,19 @@ export const useUpdateLink = () => {
       if (context?.previousLinks) {
         setLinks(context.previousLinks);
       }
-      // toast.error(
-      //   error.message || "Failed to update the link. Please try again."
-      // );
 
       toast(error.message || "Failed to update the link. Please try again.", {
         className: "error-toast ",
-        // description: "With a description and an icon",
+
         duration: TOAST_TIMEOUT,
-        // icon: <ShieldAlert />,
       });
     },
 
-    onSuccess: (apiResponse, _, context) => {
+    onSuccess: (apiResponse, variables, context) => {
+      // console.log("Async func", links);
+      // console.log("API response", apiResponse);
+      // console.log("Variables", variables);
+      // console.log("Context", context);
       if (apiResponse.error) {
         // toast.error(
         //   apiResponse.message || "An error occurred while updating the link."
@@ -94,7 +107,61 @@ export const useUpdateLink = () => {
         }
         return;
       }
+
+      // Update the links, setting the new order as the original order for the saved link
+      // const updatedLinks = links.map((link) =>
+      //   link.ID === variables.id
+      //     ? {
+      //         ...link,
+      //         dirty: false,
+      //         original: {
+      //           ...link.original,
+      //           Platform: link.Platform,
+      //           URL: link.URL,
+      //           order: link.order, // Save the new order as the original order
+      //         },
+      //       }
+      //     : link
+      // );
+
+      // setLinks(updatedLinks);
+      // updateOriginalOrders();
       // toast.success(apiResponse.message || "Link updated successfully!");
+
+      // const updated = apiResponse.data;
+
+      // const updatedLinks = links.map((link) =>
+      //   link.ID === updated?.ID
+      //     ? {
+      //         ...link,
+      //         ...updated,
+      //         dirty: false,
+      //         original: {
+      //           Platform: updated.Platform,
+      //           URL: updated.URL,
+      //           order: updated.order,
+      //         },
+      //       }
+      //     : link
+      // );
+
+      // setLinks(updatedLinks);
+
+      // const updatedLinks = links.map((link) =>
+      //   link.ID === variables.id
+      //     ? {
+      //         ...link,
+      //         dirty: false,
+      //         original: {
+      //           Platform: link.Platform,
+      //           URL: link.URL,
+      //           order: link.order, // Save the current order as original
+      //         },
+      //       }
+      //     : link
+      // );
+
+      // setLinks(updatedLinks);
 
       toast(apiResponse.message || "Link updated successfully!", {
         className: "success-toast",
@@ -102,6 +169,7 @@ export const useUpdateLink = () => {
         duration: TOAST_TIMEOUT,
         // icon: <CircleCheck />,
       });
+      console.log(" after", links);
     },
   });
 };
