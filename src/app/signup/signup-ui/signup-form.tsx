@@ -196,12 +196,8 @@ export default function SignupForm() {
             isAuthProcessing
           }
           onClick={handleSubmit(onSubmit)}
-          className="w-full bg-purple-light  dark:text-foreground dark:hover:bg-purple-primary text-foreground">
-          {isAuthProcessing || isPending ? (
-            <Spinner />
-          ) : (
-            "   Create new account"
-          )}
+          className="w-full dark:bg-sidebar-primary bg-purple-primary  dark:text-foreground dark:hover:bg-purple-primary text-background">
+          {isAuthProcessing || (isPending && <Spinner />)} Create new account
         </Button>
       </form>
 

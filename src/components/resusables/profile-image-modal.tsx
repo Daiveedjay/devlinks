@@ -29,7 +29,7 @@ export default function ProfileImageModal({
         </DialogHeader>
         <div className="relative w-full aspect-square rounded-lg overflow-hidden">
           <Image
-            src={imageUrl}
+            src={imageUrl || "/placeholder.webp"}
             alt="Profile picture"
             fill
             className="object-cover"

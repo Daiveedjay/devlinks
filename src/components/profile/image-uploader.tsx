@@ -125,7 +125,7 @@ export default function ProfileImageUploader() {
               {!selectedFile ? (
                 <>
                   <Image
-                    src={originalImage || user_image}
+                    src={originalImage || user_image || "/placeholder.webp"}
                     fill
                     sizes="100%"
                     alt="Avatar"

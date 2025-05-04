@@ -44,7 +44,7 @@ export default function PreviewTemplate({
             <div className=" relative w-28 rounded-full h-28 dark:outline-sidebar-border outline-4 outline-purple-primary overflow-hidden">
               <Avatar className=" w-28 h-28 mb-4">
                 <AvatarImage
-                  src={user_image}
+                  src={user_image || "/placeholder.webp"}
                   alt="Profile"
                   height={112}
                   width={112}

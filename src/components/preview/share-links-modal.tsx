@@ -46,7 +46,7 @@ export default function ShareLinksModal({
           <div className="  mx-6 rounded-md bg-sidebar-border p-8 flex flex-col items-center">
             <Avatar className=" w-32 h-32 mb-4">
               <AvatarImage
-                src={user_image}
+                src={user_image || "/placeholder.webp"}
                 alt="Profile"
                 height={96}
                 width={96}
