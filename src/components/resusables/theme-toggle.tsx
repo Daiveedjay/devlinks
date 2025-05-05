@@ -8,9 +8,8 @@ import { Moon, Sun } from "lucide-react";
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [animating, setAnimating] = useState(false);
+
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   // Handle hydration
   useEffect(() => {
@@ -23,13 +22,6 @@ export function ThemeToggle() {
     // setAnimating(true);
 
     // Get the position of the toggle button for the animation origin
-    if (toggleRef.current) {
-      const rect = toggleRef.current.getBoundingClientRect();
-      setPosition({
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-      });
-    }
 
     // Set the theme after a slight delay to allow animation to start
     const newTheme = theme === "dark" ? "light" : "dark";

@@ -1,5 +1,4 @@
 import { apiEndpoint } from "@/lib/constants";
-
 import PreviewTemplate from "@/components/preview/preview-template";
 import { Link as LinkType } from "@/store/useLinkStore";
 import NotFound from "./not-found";
@@ -17,11 +16,9 @@ export type UserProfileResponse = {
 export default async function Page({
   params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
-  // Await the params to ensure they've been resolved
-  const resolvedParams = await Promise.resolve(params);
-  const { username } = resolvedParams;
+  const { username } = await params;
 
   const response = await fetch(`${apiEndpoint}/users/profile/${username}`, {
     method: "GET",
@@ -30,31 +27,22 @@ export default async function Page({
     },
   });
 
-  // Optionally, handle errors or parse JSON here
-  console.log(response, "data in profile page");
-
   if (!response.ok) {
-    console.log(response, "response in profile page");
-
     return <NotFound />;
   }
 
   const data = await response.json();
-
   const userData: UserProfileResponse = data.data;
 
   return <PreviewTemplate user={{ ...userData, id: userData.id.toString() }} />;
 }
 
-// ...existing UserProfileResponse type..
-// Add metadata generation function
 export async function generateMetadata({
   params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }): Promise<Metadata> {
-  const resolvedParams = await Promise.resolve(params);
-  const { username } = resolvedParams;
+  const { username } = await params;
 
   try {
     const response = await fetch(`${apiEndpoint}/users/profile/${username}`, {
@@ -93,8 +81,7 @@ export async function generateMetadata({
         images: userData.user_image ? [userData.user_image] : [],
       },
     };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     return {
       title: "Error | DevLinks",
       description: "An error occurred while loading the user profile.",
