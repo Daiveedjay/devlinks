@@ -91,7 +91,7 @@ export const defaultMotionConfig = {
   transition: { duration: 0.3, ease: [0.4, 0.0, 0.2, 1] }, // Cubic bezier
 };
 
-export const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
+export const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT!;
 
 export const HAMBURGER_VARIANTS = {
   top: {
