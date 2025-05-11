@@ -9,27 +9,31 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // For /login and /signup routes:
+  // Redirect authenticated users away from login/signup
   if (pathname.startsWith("/login") || pathname.startsWith("/signup")) {
     if (token) {
-      // If authenticated, redirect to home.
-      return NextResponse.redirect(new URL("/", req.url));
+      const res = NextResponse.redirect(new URL("/", req.url));
+      res.headers.set("Cache-Control", "no-store"); // prevent caching
+      return res;
     }
     return NextResponse.next();
   }
 
-  // For all other routes, if not authenticated, redirect to /login.
+  // Redirect unauthenticated users trying to access protected pages
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    const res = NextResponse.redirect(new URL("/login", req.url));
+    res.headers.set("Cache-Control", "no-store"); // prevent caching
+    return res;
   }
 
-  // Set currentPath cookie for authenticated routes.
+  // Set currentPath for authenticated users
   const res = NextResponse.next();
   res.cookies.set("currentPath", pathname);
+  res.headers.set("Cache-Control", "no-store"); // prevent Netlify caching
   return res;
 }
 
-// Apply middleware to all routes except static assets.
+// Apply middleware to all routes except static assets and auth callback
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|auth/callback).*)"],
 };
