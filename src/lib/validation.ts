@@ -42,7 +42,7 @@ const platformPatterns = {
   dribbble: /^https?:\/\/(www\.)?dribbble\.com\/[\w-]+\/?$/,
   twitch: /^https?:\/\/(www\.)?twitch\.tv\/[\w-]+\/?$/,
   devto: /^https?:\/\/(www\.)?dev\.to\/[\w-]+\/?$/,
-  website:
+  other:
     /^(?:(?:https?:\/\/)?(?:www\.)?|(?:www\.)?)[\w-]+\.[a-zA-Z]{2,}(\S+)?$/,
   framer: /^https?:\/\/(www\.)?framer\.com\/@[\w-]+\/?$/,
 };
@@ -58,7 +58,7 @@ export const socialMediaSchema = z
       "dribbble",
       "twitch",
       "devto",
-      "website",
+      "other",
       "framer",
     ]),
     URL: z

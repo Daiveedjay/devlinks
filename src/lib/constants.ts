@@ -69,8 +69,8 @@ export const platforms = [
     domainAvatar: "dev-to-uploads.s3.amazonaws.com",
   },
   {
-    value: "website",
-    label: "Personal Website",
+    value: "other",
+    label: "Other",
     icon: Globe,
     placeholder: "https://yoursite.com",
   },
