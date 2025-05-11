@@ -31,7 +31,7 @@ export default function ShareLinksModal({
         <DialogContent className="max-w-[90%] sm:max-w-md p-0 overflow-hidden bg-background">
           <DialogHeader className="p-4 pb-0 flex justify-between items-center">
             <DialogTitle className="text-center w-full font-medium text-foreground">
-              Share Devlinks
+              Share devlinks
             </DialogTitle>
             <Button
               variant="ghost"
@@ -66,11 +66,11 @@ export default function ShareLinksModal({
 
           <div className="p-4 border-t sm:mt-2">
             <h3 className="font-medium text-foreground text-md">
-              Join {username} on Devlinks
+              Join <span className=" font-medium">{username}</span> on devlinks
             </h3>
 
             <div className="flex mt-2 gap-4">
-              <Link href="/login" className="block w-full">
+              <Link target="_blank" href="/login" className="block w-full">
                 {" "}
                 <Button className="rounded-full flex-1 w-full py-6 dark:bg-purple-light text-background dark:text-foreground ">
                   Sign up free
