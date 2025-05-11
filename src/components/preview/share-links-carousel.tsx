@@ -22,7 +22,7 @@ type ShareOption = {
 
 export default function ShareLinksCarousel({ username }: { username: string }) {
   // build your URL on the fly
-  const url = `https://devlinks.dev/@${username}`;
+  const url = `https://devlinks.info/@${username}`;
 
   const encoded = encodeURIComponent(url);
 
