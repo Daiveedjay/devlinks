@@ -51,11 +51,30 @@ export function PlatformSelect({
     setSelectedValue(currentValue);
     onValueChange?.(currentValue);
     setOpen(false);
+
+    // Add https:// prefix when platform is selected if URL is empty
+    if (!linkValue) {
+      const initialUrl = "https://";
+      updateLink(id, { URL: initialUrl });
+      onLinkChange?.(initialUrl);
+    }
   };
 
-  const validateLink = (URL: string) => updateLink(id, { URL }); // Update the link with the new URL
+  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = e.target.value;
 
-  return (
+    // Remove all leading https:// or http:// (even if repeated)
+    newValue = newValue.replace(/^(https?:\/\/)+/, "");
+
+    // Add one https:// prefix back
+    newValue = `https://${newValue}`;
+
+    // Update the link
+    updateLink(id, { URL: newValue });
+    onLinkChange?.(newValue);
+  };
+
+  https: return (
     <div className="space-y-4">
       <div className=" w-full">
         {" "}
@@ -116,12 +135,12 @@ export function PlatformSelect({
         <Input
           type="url"
           value={linkValue}
-          onChange={(e) => {
-            onLinkChange?.(e.target.value);
-            validateLink(e.target.value); // Run validation as user types
-          }}
+          onChange={
+            // onLinkChange?.(e.target.value);
+            handleLinkChange // Run validation as user types
+          }
           placeholder={selectedPlatform?.placeholder || "Enter your link"}
-          onBlur={() => validateLink(linkValue)}
+          // onBlur={() => validateLink(linkValue)}
           disabled={!selectedPlatform}
           className={cn(
             "h-12 font-medium !text-gray-dark dark:border-muted-foreground border-gray-light focus:border-purple-primary focus:ring-2 focus:ring-purple-light dark:focus:ring-purple-primary dark:focus:border-purple-primary",
