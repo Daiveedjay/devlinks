@@ -5,6 +5,32 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { platforms } from "@/lib/constants";
 
+// Define the platform types
+type PlatformWithAvatar = {
+  value: string;
+  label: string;
+  icon: React.ComponentType;
+  placeholder: string;
+  domainAvatar: string; // This property is required for platforms with avatars
+};
+
+type PlatformWithoutAvatar = {
+  value: string;
+  label: string;
+  icon: React.ComponentType;
+  placeholder: string;
+  domainAvatar?: string; // This property is optional for other platforms
+};
+
+type Platform = PlatformWithAvatar | PlatformWithoutAvatar;
+
+// Type guard to filter platforms with domainAvatar
+const isPlatformWithAvatar = (
+  platform: Platform
+): platform is PlatformWithAvatar => {
+  return Boolean((platform as PlatformWithAvatar).domainAvatar);
+};
+
 export default function LinkPreview({ url }: { url: string }) {
   const { data: preview, isLoading, error } = useLinkPreview(url);
 
@@ -36,9 +62,10 @@ export default function LinkPreview({ url }: { url: string }) {
   const isAllowedImage =
     hostname &&
     platforms
-      .map((platform) => platform.domainAvatar)
-      .filter(Boolean)
-      .includes(hostname);
+      .filter(isPlatformWithAvatar) // Only platforms that have domainAvatar
+      .some(
+        (platform) => (platform as PlatformWithAvatar).domainAvatar === hostname
+      );
 
   return (
     <Link
