@@ -4,7 +4,7 @@ import { useUpdateLink } from "@/queries/links/updateLink";
 import { useLinkStore } from "@/store/useLinkStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { Equal, Grip, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { PlatformSelect } from "./platform-select";
 import {
@@ -15,6 +15,9 @@ import {
 } from "@hello-pangea/dnd";
 
 export default function LinksContainer() {
+  const containerRef = useRef<HTMLUListElement>(null);
+  // Scroll to bottom when new link is added
+
   const { links, errors, updateLink, setLinks } = useLinkStore(
     (store) => store
   );
@@ -79,6 +82,12 @@ export default function LinksContainer() {
     setLinks(updatedLinks);
   };
 
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [links.length]);
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="droppable-links">
@@ -86,7 +95,13 @@ export default function LinksContainer() {
           <ul
             className="flex-1 py-6 sm:py-10 flex flex-col gap-6 sm:gap-10"
             {...provided.droppableProps}
-            ref={provided.innerRef}>
+            ref={(element) => {
+              provided.innerRef(element);
+              // Merge the refs
+              if (containerRef) {
+                containerRef.current = element;
+              }
+            }}>
             {links?.map((link, index) => (
               <Draggable
                 key={link.ID}
