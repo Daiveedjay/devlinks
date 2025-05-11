@@ -33,8 +33,6 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: () => logout(),
     onSuccess: () => {
-      router.push("/login");
-
       // toast.success("Logout successful!");
       toast("Logout successful!", {
         className: "success-toast",
@@ -45,6 +43,8 @@ export const useLogout = () => {
       clearUser();
       clearLinksStore();
       clearAuth();
+
+      router.push("/login");
       // setUser(null); // Clear the user state
       // Redirect to the login page
     },
