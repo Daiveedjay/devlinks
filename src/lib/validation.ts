@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { platforms } from "./constants";
 
 // Login Form Schema
 export const loginSchema = z.object({
@@ -29,38 +30,43 @@ export const profileSchema = z.object({
   bio: z.string().min(1, { message: "Bio is required" }),
 });
 
-const platformPatterns = {
+export const platformPatterns: Record<string, RegExp> = {
   github: /^https?:\/\/(www\.)?github\.com\/[\w-]+\/?$/,
-  twitter: /^https?:\/\/(www\.)?x\.com\/[\w-]+\/?$/,
+  twitter: /^https?:\/\/(www\.)?(x|twitter)\.com\/[\w-]+\/?$/,
   linkedin: /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[\w-]+\/?$/,
   facebook:
     /^https?:\/\/(www\.|web\.)?facebook\.com\/(profile\.php\?id=\d+|[\w.-]+)\/?$/,
-
   youtube:
     /^https?:\/\/(www\.)?(youtube\.com\/(@[\w-]+|c\/[\w-]+|channel\/[\w-]+|user\/[\w-]+|watch\?v=[\w-]+)|youtu\.be\/[\w-]+)\/?$/,
-
   dribbble: /^https?:\/\/(www\.)?dribbble\.com\/[\w-]+\/?$/,
   twitch: /^https?:\/\/(www\.)?twitch\.tv\/[\w-]+\/?$/,
   devto: /^https?:\/\/(www\.)?dev\.to\/[\w-]+\/?$/,
+  framer: /^https?:\/\/(www\.)?framer\.com\/@[\w-]+\/?$/,
+  spotify: /^https?:\/\/(open\.)?spotify\.com\/user\/[\w-]+\/?$/,
+  soundcloud:
+    /^https?:\/\/(soundcloud\.com\/[\w-]+(?:\/[\w-]+)?|on\.soundcloud\.com\/[\w]+)\/?$/,
+  producthunt: /^https?:\/\/(www\.)?producthunt\.com\/@[\w-]+\/?$/,
+  stackoverflow:
+    /^https?:\/\/(www\.)?stackoverflow\.com\/users\/\d+\/[\w-]+\/?$/,
+  behance: /^https?:\/\/(www\.)?behance\.net\/[\w-]+\/?$/,
+  hashnode: /^https?:\/\/(www\.)?hashnode\.com\/@[\w-]+\/?$/,
+  instagram: /^https?:\/\/(www\.)?instagram\.com\/[\w.-]+\/?$/,
+  codepen: /^https?:\/\/(www\.)?codepen\.io\/[\w-]+\/?$/,
+
   other:
     /^(?:(?:https?:\/\/)?(?:www\.)?|(?:www\.)?)[\w-]+\.[a-zA-Z]{2,}(\S+)?$/,
-  framer: /^https?:\/\/(www\.)?framer\.com\/@[\w-]+\/?$/,
 };
 
+// 2. Dynamic platform keys
+export const platformKeys = platforms.map((p) => p.value) as [
+  string,
+  ...string[]
+];
+
+// 4. Zod validation schema
 export const socialMediaSchema = z
   .object({
-    Platform: z.enum([
-      "github",
-      "twitter",
-      "linkedin",
-      "facebook",
-      "youtube",
-      "dribbble",
-      "twitch",
-      "devto",
-      "other",
-      "framer",
-    ]),
+    Platform: z.enum(platformKeys),
     URL: z
       .string()
       .url("Invalid URL format")
@@ -68,7 +74,6 @@ export const socialMediaSchema = z
   })
   .refine(
     (data) => {
-      //
       const regex = platformPatterns[data.Platform];
       return !regex || regex.test(data.URL);
     },

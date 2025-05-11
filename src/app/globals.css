@@ -83,6 +83,14 @@ body {
   --brand-devto: #0a0a0a;
   --brand-other: #6c63ff; /* Default color */
   --brand-framer: #0055ff;
+  --brand-soundcloud: #ff7700; /* SoundCloud */
+  --brand-spotify: #1db954; /* Spotify */
+  --brand-producthunt: #da552f; /* ProductHunt */
+  --brand-stackoverflow: #f48024; /* StackOverflow */
+  --brand-behance: #1769ff; /* Behance */
+  --brand-hashnode: #2962ff; /* Hashnode */
+  --brand-instagram: #e4405f; /* Instagram */
+  --brand-codepen: #000000; /* CodePen */
 
   /* --purple-dark: rgba(99, 60, 255, 0.35); */
 }
