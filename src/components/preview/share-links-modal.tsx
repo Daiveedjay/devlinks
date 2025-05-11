@@ -28,7 +28,11 @@ export default function ShareLinksModal({
   return (
     <div className="flex fixed min-h-screen items-center justify-center bg-gray-800 p-4">
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-[90%] sm:max-w-md p-0 overflow-hidden bg-background">
+        <DialogContent
+          aria-describedby="share-modal"
+          aria-description="Share your devlinks"
+          aria-labelledby="share-modal"
+          className="max-w-[90%] sm:max-w-md p-0 overflow-hidden bg-background">
           <DialogHeader className="p-4 pb-0 flex justify-between items-center">
             <DialogTitle className="text-center w-full font-medium text-foreground">
               Share devlinks

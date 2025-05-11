@@ -21,10 +21,10 @@ export default function Messenger() {
           r="1"
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(8.3 17.9) scale(13 13)">
-          <stop stop-color="#0099FF"></stop>
-          <stop offset="0.6" stop-color="#A033FF"></stop>
-          <stop offset="0.93" stop-color="#FF5280"></stop>
-          <stop offset="1" stop-color="#FF7061"></stop>
+          <stop stopColor="#0099FF"></stop>
+          <stop offset="0.6" stopColor="#A033FF"></stop>
+          <stop offset="0.93" stopColor="#FF5280"></stop>
+          <stop offset="1" stopColor="#FF7061"></stop>
         </radialGradient>
       </defs>
     </svg>

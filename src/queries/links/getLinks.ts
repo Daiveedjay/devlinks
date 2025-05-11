@@ -41,7 +41,7 @@ export const useFetchLinks = () => {
       setLinks(links);
       return links;
     },
-    enabled: !!userId,
+    enabled: userId !== undefined, // Ensure the query only runs when the user is available
     retry: (failureCount, error: ApiError) => {
       if (error.status === 401) {
         setIsUnauthorized(true);

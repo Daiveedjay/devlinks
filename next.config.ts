@@ -1,10 +1,10 @@
 import { platforms } from "@/lib/constants";
 import type { NextConfig } from "next";
+import TerserPlugin from "terser-webpack-plugin";
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      // Keep existing platform patterns
       ...platforms
         .filter(
           (platform): platform is typeof platform & { domainAvatar: string } =>
@@ -15,7 +15,6 @@ const nextConfig: NextConfig = {
           hostname: platform.domainAvatar,
           pathname: "**",
         })),
-      // Add Cloudinary domain
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
@@ -35,6 +34,20 @@ const nextConfig: NextConfig = {
         destination: "/users/profile/:username",
       },
     ];
+  },
+  webpack(config, { isServer, dev }) {
+    if (!dev && !isServer) {
+      config.optimization.minimizer.push(
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: true, // 🚫 Removes console.* calls
+            },
+          },
+        })
+      );
+    }
+    return config;
   },
 };
 
