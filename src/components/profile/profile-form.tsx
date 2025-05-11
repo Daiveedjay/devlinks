@@ -18,6 +18,9 @@ import { toast } from "sonner";
 
 export default function ProfileForm() {
   const [focusedField, setFocusedField] = useState<string | null>("firstName");
+  const user = useUserStore((store) => store.user);
+
+  console.log(user, "user");
 
   // Setup form validation
   const {
@@ -29,11 +32,9 @@ export default function ProfileForm() {
   } = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      bio: "An adventurer who loves to explore new places.",
+      bio: user.bio,
     },
   });
-
-  const user = useUserStore((store) => store.user);
 
   const { mutate: updateUserAsync, isPending } = useUpdateUser();
 
@@ -129,7 +130,11 @@ export default function ProfileForm() {
           <Textarea
             {...register("bio")}
             id="bio"
-            defaultValue={watchedBio}
+            value={
+              watchedBio ||
+              user.bio ||
+              "An adventurer who loves to explore new places."
+            } // placeholder={user.bio}
             onChange={handleBioChange}
             className={`border dark:border-muted-foreground resize-none placeholder:font-normal  font-semibold flex-2/3 ${
               focusedField === "bio"
