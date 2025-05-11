@@ -55,7 +55,7 @@ export default function PreviewTemplate({
               </Avatar>
             </div>
             <div>
-              <h3 className="medium__header  mt-6 break-words max-w-[75%]">
+              <h3 className="medium__header  mt-6 break-words max-w-[200px]">
                 @{username}
               </h3>
 

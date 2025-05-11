@@ -79,7 +79,7 @@ export default function PhonePreview() {
           </div>
 
           {/* Profile Name */}
-          <h1 className="text-base font-bold text-gray-dark mb-[4px]">
+          <h1 className="text-base break-words max-w-full font-bold text-gray-dark mb-[4px] overflow-hidden">
             @{username || "Anon user"}
           </h1>
 

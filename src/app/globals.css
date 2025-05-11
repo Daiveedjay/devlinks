@@ -232,7 +232,7 @@ body {
   }
 
   .medium__header {
-    @apply text-3xl font-bold leading-[150%] text-gray-dark;
+    @apply text-xl sm:text-2xl font-bold leading-[150%] text-gray-dark;
   }
 
   .medium__text {
