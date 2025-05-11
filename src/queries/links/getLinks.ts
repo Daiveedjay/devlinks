@@ -34,7 +34,7 @@ export const useFetchLinks = () => {
   const setLinks = useLinkStore((store) => store.setLinks);
   const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 
-  const { refetch, ...queryInfo } = useQuery({
+  return useQuery({
     queryKey: ["links", userId],
     queryFn: async () => {
       const links = await fetchLinks();
@@ -50,6 +50,4 @@ export const useFetchLinks = () => {
       return failureCount < 3;
     },
   });
-
-  return { ...queryInfo, refetch }; // Expose refetch
 };

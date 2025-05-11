@@ -33,7 +33,7 @@ export const useSignup = () => {
 
     onError: (error) =>
       toast(error.message, {
-        className: "error-toast ",
+        className: "error-toast",
         // description: "With a description and an icon",
         duration: TOAST_TIMEOUT,
         // icon: <ShieldAlert />,
@@ -50,6 +50,7 @@ export const useSignup = () => {
       });
       setUser(data.data as User);
       router.push("/");
+      window.location.reload();
     },
   });
 };
