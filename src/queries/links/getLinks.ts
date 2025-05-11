@@ -34,14 +34,14 @@ export const useFetchLinks = () => {
   const setLinks = useLinkStore((store) => store.setLinks);
   const setIsUnauthorized = useAuthStore((store) => store.setIsUnauthorized);
 
-  return useQuery({
+  const { refetch, ...queryInfo } = useQuery({
     queryKey: ["links", userId],
     queryFn: async () => {
       const links = await fetchLinks();
       setLinks(links);
       return links;
     },
-    enabled: userId !== undefined, // Ensure the query only runs when the user is available
+    enabled: !!userId,
     retry: (failureCount, error: ApiError) => {
       if (error.status === 401) {
         setIsUnauthorized(true);
@@ -50,4 +50,6 @@ export const useFetchLinks = () => {
       return failureCount < 3;
     },
   });
+
+  return { ...queryInfo, refetch }; // Expose refetch
 };

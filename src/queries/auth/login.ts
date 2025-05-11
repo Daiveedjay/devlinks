@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { User, useUserStore } from "@/store/useUserStore";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useFetchLinks } from "../links/getLinks";
 
 export const login = async (payload: AuthPayload): Promise<AuthResponse> => {
   const response = await fetch(`${apiEndpoint}/login`, {
@@ -28,6 +29,7 @@ export const login = async (payload: AuthPayload): Promise<AuthResponse> => {
 export const useLogin = () => {
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
+  const { refetch } = useFetchLinks(); // Access refetch from the query hook
 
   return useMutation<AuthResponse, Error, AuthPayload>({
     mutationFn: login,
@@ -50,6 +52,7 @@ export const useLogin = () => {
       });
       setUser(data.data as User); // Assuming 'data.data' contains user info
       router.push("/");
+      refetch();
     },
   });
 };
