@@ -45,14 +45,14 @@ export default function PreviewTemplate({
         </div>
         <div className=" flex justify-center">
           <div className="w-full mx-4 sm:mx-0 sm:w-[350px] rounded-3xl -translate-y-40 sm:overflow-y-auto h-full sm:max-h-[560px] shadow-lg dark:shadow-2xl dark:border-2 dark:border-sidebar-accent flex flex-col p-4 sm:p-8 items-center bg-background">
-            <div className=" relative w-28 rounded-full h-28 dark:outline-sidebar-border outline-4 outline-purple-primary overflow-hidden">
-              <Avatar className=" w-28 h-28 mb-4">
+            <div className=" relative min-w-28 rounded-full min-h-28 dark:outline-sidebar-border outline-4 outline-purple-primary overflow-hidden">
+              <Avatar className=" min-w-28 min-h-28 mb-4">
                 <AvatarImage
                   src={user_image || "/placeholder.webp"}
                   alt="Profile"
                   height={112}
                   width={112}
-                  className="object-cover"
+                  className="object-cover min-w-28 min-h-28"
                   sizes="100%"
                 />
                 <AvatarFallback>{username}</AvatarFallback>
