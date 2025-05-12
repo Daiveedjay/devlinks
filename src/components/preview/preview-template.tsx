@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import ShareLinksModal from "./share-links-modal";
+import { useFetchLinks } from "@/queries/links/getLinks";
 
 export default function PreviewTemplate({
   user,
@@ -17,6 +18,9 @@ export default function PreviewTemplate({
   const { username, bio, user_image, email, links } = user;
 
   const [open, setOpen] = useState(false);
+
+  const { isPending } = useFetchLinks();
+  console.log(isPending, "isPending");
   return (
     <>
       {" "}
