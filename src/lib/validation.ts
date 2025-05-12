@@ -32,7 +32,8 @@ export const profileSchema = z.object({
 
 export const platformPatterns: Record<string, RegExp> = {
   github: /^https?:\/\/(www\.)?github\.com\/[\w-]+\/?$/,
-  twitter: /^https?:\/\/(www\.)?(x|twitter)\.com\/[\w-]+\/?$/,
+  twitter: /^https?:\/\/(www\.)?(x|twitter)\.com\/[\w-]+\/?(?:\?.*)?$/,
+
   linkedin: /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[\w-]+\/?$/,
   facebook:
     /^https?:\/\/(www\.|web\.)?facebook\.com\/(profile\.php\?id=\d+|[\w.-]+)\/?$/,
