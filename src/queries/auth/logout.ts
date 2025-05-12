@@ -44,6 +44,7 @@ export const useLogout = () => {
       clearLinksStore();
       clearAuth();
 
+      window.location.reload(); // Reload the page to clear any cached data
       router.push("/login");
       // setUser(null); // Clear the user state
       // Redirect to the login page
