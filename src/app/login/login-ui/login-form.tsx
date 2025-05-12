@@ -22,7 +22,8 @@ import { useForm } from "react-hook-form";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isAuthProcessing, setIsAuthProcessing] = useState(false);
+  const [isGoogleProcessing, setIsGoogleProcessing] = useState(false);
+  const [isGithubProcessing, setIsGithubProcessing] = useState(false);
 
   const { mutate: login, isPending } = useLogin();
 
@@ -42,10 +43,22 @@ export default function LoginForm() {
     login({ email: data.email, password: data.password });
   };
 
-  const handleOAuth = (provider: string) => {
-    setIsAuthProcessing(true);
-    router.push(`${apiEndpoint}/auth/${provider}`);
+  // const handleOAuth = (provider: string) => {
+  //   setIsAuthProcessing(true);
+  //   router.push(`${apiEndpoint}/auth/${provider}`);
+  // };
+
+  const handleGoogleAuth = () => {
+    setIsGoogleProcessing(true);
+    router.push(`${apiEndpoint}/auth/google`);
   };
+
+  const handleGithubAuth = () => {
+    setIsGithubProcessing(true);
+    router.push(`${apiEndpoint}/auth/github`);
+  };
+
+  const isAnyProcessing = isGoogleProcessing || isGithubProcessing || isPending;
 
   return (
     <div className="w-full max-w-md bg-sidebar p-4 sm:p-8 shadow-sm rounded-md">
@@ -67,19 +80,20 @@ export default function LoginForm() {
         <Button
           type="button"
           variant="outline"
-          disabled={isAuthProcessing || isPending}
+          disabled={isAnyProcessing}
           className="w-full border-gray-light bg-purple-light hover:text-background hover:bg-purple-secondary  dark:text-foreground dark:hover:bg-purple-primary"
-          onClick={() => handleOAuth("google")}>
-          {isAuthProcessing || isPending ? <Spinner /> : <GoogleIcon />}
+          onClick={handleGoogleAuth}>
+          {isGoogleProcessing ? <Spinner /> : <GoogleIcon />}
           Continue with Google
         </Button>
+
         <Button
           type="button"
           variant="outline"
-          disabled={isAuthProcessing || isPending}
+          disabled={isAnyProcessing}
           className="w-full border-gray-light bg-purple-light hover:text-background hover:bg-purple-secondary  dark:text-foreground dark:hover:bg-purple-primary"
-          onClick={() => handleOAuth("github")}>
-          {isAuthProcessing || isPending ? (
+          onClick={handleGithubAuth}>
+          {isGithubProcessing ? (
             <Spinner />
           ) : (
             <Github className="w-5 h-5 mr-2" />
@@ -152,13 +166,12 @@ export default function LoginForm() {
         </div>
 
         <Button
-          // type="submit"
           disabled={
-            !!errors.email || !!errors.password || isPending || isAuthProcessing
+            !!errors.email || !!errors.password || isPending || isAnyProcessing
           }
           onClick={handleSubmit(onSubmit)}
           className="w-full dark:bg-sidebar-primary bg-purple-primary  dark:text-foreground dark:hover:bg-purple-primary text-background">
-          {(isAuthProcessing || isPending) && <Spinner />} Login
+          {isPending && <Spinner />} Login
         </Button>
       </form>
 
