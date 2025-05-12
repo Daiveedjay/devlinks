@@ -62,6 +62,12 @@ export default function ShareLinksModal({
             <h2 className="text-foreground text-xl font-semibold mb-1">
               @{username}
             </h2>
+            <Link
+              href={`https://devlinks.info/@${username}`}
+              target="_blank"
+              className="text-purple-primary hover:text-purple-hover underline-offset-4 hover:underline transition-colors">
+              devlinks.info/@{username}
+            </Link>
           </div>
 
           <div className="px-6 overflow-x-auto">
