@@ -71,24 +71,26 @@ export default function PreviewTemplate({
               </p>
             </div>
             <ul className=" mt-6 w-full text-white flex flex-col gap-4">
-              {links?.map((link) => {
-                const brand = link.Platform?.toLowerCase() || "default";
-                return (
-                  <Link
-                    href={link.URL}
-                    target="_blank"
-                    className="p-4 rounded-lg bg-purple-primary w-full capitalize flex justify-between group items-center"
-                    style={{
-                      backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
-                    }}
-                    key={link.order}>
-                    <span> {link.Platform}</span>
-                    <span className=" transform transition-transform duration-300 group-hover:translate-x-1">
-                      <ArrowRight size={16} />
-                    </span>
-                  </Link>
-                );
-              })}
+              {links
+                ?.sort((a, b) => a.order - b.order) // Sort links by order
+                ?.map((link) => {
+                  const brand = link.Platform?.toLowerCase() || "default";
+                  return (
+                    <Link
+                      href={link.URL}
+                      target="_blank"
+                      className="p-4 rounded-lg bg-purple-primary w-full capitalize flex justify-between group items-center"
+                      style={{
+                        backgroundColor: `var(--brand-${brand}, var(--brand-default))`,
+                      }}
+                      key={link.order}>
+                      <span> {link.Platform}</span>
+                      <span className=" transform transition-transform duration-300 group-hover:translate-x-1">
+                        <ArrowRight size={16} />
+                      </span>
+                    </Link>
+                  );
+                })}
             </ul>
           </div>
         </div>
